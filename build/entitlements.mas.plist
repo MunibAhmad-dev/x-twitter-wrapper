@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <!-- Sandboxing (REQUIRED for all Mac App Store apps) -->
+  <key>com.apple.security.app-sandbox</key>
+  <true/>
+
+  <!-- Team Identifier (must match your Apple Developer Team) -->
+  <key>com.apple.developer.team-identifier</key>
+  <string>L284ZYR49L</string>
+
+  <!-- Application Identifier (TeamID.BundleID) -->
+  <key>com.apple.application-identifier</key>
+  <string>L284ZYR49L.com.mihai.appsforx</string>
+
+  <!-- Network: required to load x.com -->
+  <key>com.apple.security.network.client</key>
+  <true/>
+
+  <!-- User-selected file access (downloads, file sharing) -->
+  <key>com.apple.security.files.user-selected.read-write</key>
+  <true/>
+
+</dict>
+</plist>

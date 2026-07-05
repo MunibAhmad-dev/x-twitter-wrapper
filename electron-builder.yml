@@ -1,0 +1,67 @@
+appId: com.mihai.appsforx
+productName: Apps for X
+copyright: "Copyright © 2024 Apps for X. Not affiliated with X Corp. or Twitter, Inc."
+
+directories:
+  output: release
+  buildResources: assets
+
+files:
+  - dist/**/*
+  - dist-electron/**/*
+  - "!**/*.map"
+
+extraResources:
+  - from: assets/
+    to: assets/
+    filter:
+      - "**/*"
+
+# ─── macOS DMG (direct distribution) ──────────────────────────────────────────
+mac:
+  category: public.app-category.social-networking
+  icon: assets/icon.png
+  target:
+    - target: dmg
+      arch: [arm64]
+    - target: mas
+      arch: [universal]
+  entitlements: build/entitlements.mac.plist
+  entitlementsInherit: build/entitlements.mac.plist
+  hardenedRuntime: true
+  gatekeeperAssess: true
+  notarize:
+    teamId: L284ZYR49L
+
+dmg:
+  title: Apps for X
+  icon: assets/icon.png
+  window:
+    width: 600
+    height: 380
+  contents:
+    - x: 130
+      y: 200
+    - x: 430
+      y: 200
+      type: link
+      path: /Applications
+
+# ─── Mac App Store ─────────────────────────────────────────────────────────────
+mas:
+  type: distribution
+  identity: "Apple Distribution: Mihai Graure (L284ZYR49L)"
+  hardenedRuntime: false
+  entitlements: build/entitlements.mas.plist
+  entitlementsInherit: build/entitlements.mas.inherit.plist
+  entitlementsLoginHelper: build/entitlements.mas.loginhelper.plist
+  provisioningProfile: appsforxprovisionaryprofile.provisionprofile
+  icon: assets/icon.png
+  # Do NOT set binaries: [] — electron-builder must auto-detect all Electron helper
+  # binaries so they receive MAS entitlements (inherit). An explicit empty array
+  # prevents helper processes from being signed correctly for the Mac App Store.
+
+# ─── Publish ───────────────────────────────────────────────────────────────────
+publish:
+  provider: github
+  releaseType: release
