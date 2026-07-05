@@ -25,7 +25,7 @@ export class AccountManager {
       showNotifications: true,
       isPremium: false,
       sidebarExpanded: false,
-      theme: 'dark',
+      theme: 'light',
     });
     
     // Automatically bypass paywall in development mode (running via npm run dev)

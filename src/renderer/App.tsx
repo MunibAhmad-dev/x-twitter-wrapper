@@ -53,7 +53,7 @@ export function App() {
       try {
         if (!window.electronAPI) {
           // Browser/dev preview mode
-          document.documentElement.classList.toggle('dark', (theme || 'dark') === 'dark')
+          document.documentElement.classList.toggle('dark', (theme || 'light') === 'dark')
           setIsLoading(false)
           return
         }

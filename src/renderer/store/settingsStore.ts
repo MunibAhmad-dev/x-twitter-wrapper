@@ -34,7 +34,7 @@ export const useSettingsStore = create<SettingsStore>((set) => ({
   premiumExpiresAt: undefined,
   premiumProductId: undefined,
   sidebarExpanded: false,
-  theme: 'dark',
+  theme: 'light',
 
   // Premium feature defaults
   aiApiKey: '',
