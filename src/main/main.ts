@@ -280,7 +280,7 @@ async function refreshFacebookAccountProfile(account: WorkspaceAccount, generati
       updates.avatarUrl = avatarUrl;
     }
 
-    const shouldReplaceLabel = ['X Account', 'X Profile', 'Instagram Account', 'Instagram Profile', 'App User', 'Facebook Account'].includes(account.label);
+    const shouldReplaceLabel = ['X Account', 'X Profile', 'TikTok Account', 'TikTok Profile', 'Instagram Account', 'Instagram Profile', 'App User', 'Facebook Account'].includes(account.label);
     if (name && (shouldReplaceLabel || account.label !== name)) {
       updates.label = name;
       updates.avatarText = getInitials(name);

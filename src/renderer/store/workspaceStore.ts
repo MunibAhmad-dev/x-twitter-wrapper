@@ -1,7 +1,7 @@
 import { create } from 'zustand'
 import type { Workspace, WorkspaceAccount } from '../../shared/types'
 
-const PLACEHOLDER_ACCOUNT_NAMES = new Set(['x account', 'x profile', 'instagram account', 'instagram profile', 'facebook account', 'app user'])
+const PLACEHOLDER_ACCOUNT_NAMES = new Set(['x account', 'x profile', 'tiktok account', 'tiktok profile', 'instagram account', 'instagram profile', 'facebook account', 'app user'])
 
 export const getWorkspaceAccountIdentityKey = (account: WorkspaceAccount) => {
   const label = account.label.trim().toLowerCase()
