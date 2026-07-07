@@ -12,7 +12,7 @@
 
   <!-- Application Identifier (TeamID.BundleID) -->
   <key>com.apple.application-identifier</key>
-  <string>L284ZYR49L.com.mihai.appsforx</string>
+  <string>L284ZYR49L.com.graure.appsforx</string>
 
   <!-- Network: required to load x.com -->
   <key>com.apple.security.network.client</key>

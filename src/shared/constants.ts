@@ -8,7 +8,7 @@ export const MESSENGER_URL = "https://x.com";
 export const MESSENGER_CHAT_URL = "https://x.com/messages";
 export const FACEBOOK_LANGUAGE_URL = "https://x.com/settings/language";
 export const FACEBOOK_NOTIFICATIONS_URL = "https://x.com/messages";
-export const BUNDLE_ID = "com.mihai.appsforx";
+export const BUNDLE_ID = "com.graure.appsforx";
 
 // ── Legal / support links (shown in the About tab and Help menu) ───────────────
 // IMPORTANT: Replace PRIVACY_POLICY_URL with YOUR OWN hosted URL before submitting.
