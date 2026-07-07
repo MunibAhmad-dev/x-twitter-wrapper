@@ -173,7 +173,7 @@ export class AuthManager {
     return true;
   }
 
-  // Workspace accounts (TikTok accounts)
+  // Workspace accounts (X accounts)
   addWorkspaceAccount(workspaceId: string, label: string, email?: string): WorkspaceAccount | { error: string } {
     this.refreshCurrentUserId();
     if (!this.currentUserId) return { error: 'Not logged in' };

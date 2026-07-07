@@ -1,7 +1,7 @@
 import { ipcRenderer } from 'electron';
 
 /**
- * Preload injected into the tiktok.com BrowserView.
+ * Preload injected into the x.com BrowserView.
  * Runs in a sandboxed renderer — intercepts title changes and
  * web Notification API calls, forwarding them to main via IPC.
  */

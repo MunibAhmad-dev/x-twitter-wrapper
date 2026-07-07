@@ -169,20 +169,20 @@ export function App() {
           setWorkspaceAccounts(accounts || [])
           if (accounts?.length > 0) {
             setActiveWorkspaceAccountId(accounts[0].id)
-            // Pre-load TikTok in the BrowserView so it's ready when user clicks messaging
+            // Pre-load X in the BrowserView so it's ready when user clicks messaging
             window.electronAPI.workspace.loadFacebook(ws.id, accounts[0].id).catch(() => {})
           }
         } else {
           // First-time user: auto-create workspace silently
           try {
-            const newWs = await window.electronAPI.workspace.create('My Workspace', '💼', '#5C6BC0')
+            const newWs = await window.electronAPI.workspace.create('My Workspace', '💼', '#1D9BF0')
             if (newWs) {
               setWorkspaces([newWs])
               setActiveWorkspaceId(newWs.id)
               const retries = [0, 600]
               for (const delay of retries) {
                 if (delay) await new Promise(r => setTimeout(r, delay))
-                const newAcct = await window.electronAPI.workspaceAccount.add(newWs.id, 'TikTok Account')
+                const newAcct = await window.electronAPI.workspaceAccount.add(newWs.id, 'X Account')
                 if (newAcct && !('error' in newAcct)) {
                   setWorkspaceAccounts([newAcct])
                   setActiveWorkspaceAccountId(newAcct.id)

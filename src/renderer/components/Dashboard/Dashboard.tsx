@@ -57,8 +57,8 @@ export function Dashboard() {
     setActiveView('messaging')
   }
 
-  // Simple add-account: just create the account and open TikTok.
-  // No modal, no workspace setup. TikTok profile picture and name
+  // Simple add-account: just create the account and open X.
+  // No modal, no workspace setup. X profile picture and name
   // auto-sync in the background once the user logs in.
   const handleAddAccount = async () => {
     // Ensure a workspace exists (silently create one if not)
@@ -77,7 +77,7 @@ export function Dashboard() {
     setActiveWorkspaceAccountId(newAccount.id)
     await window.electronAPI?.workspace.loadFacebook(wsId, newAccount.id)
     setActiveView('messaging')
-    // Profile picture and real name sync automatically after TikTok loads
+    // Profile picture and real name sync automatically after X loads
   }
 
   const handleFeatureClick = (view: string) => {

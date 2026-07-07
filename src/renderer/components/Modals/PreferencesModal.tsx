@@ -1,3 +1,4 @@
+import logoUrl from '../../assets/logo.jpeg'
 import { useEffect, useMemo, useState } from 'react'
 import { useUIStore } from '../../store/uiStore'
 import { useSettingsStore } from '../../store/settingsStore'
@@ -445,7 +446,7 @@ export function PreferencesModal() {
                 {activeTab === 'about' && (
                   <div className="space-y-5">
                     <div className="flex items-center gap-4 p-4 rounded-2xl bg-muted/30 border border-border/40">
-                      <img src="/logo.png" alt="Apps for X" className="w-14 h-14 rounded-2xl shadow-md shrink-0 object-cover" />
+                      <img src={logoUrl} alt="Apps for X" className="w-14 h-14 rounded-2xl shadow-md shrink-0 object-cover" />
                       <div>
                         <p className="text-base font-bold text-foreground">Apps for X</p>
                         <p

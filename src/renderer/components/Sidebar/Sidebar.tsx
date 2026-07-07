@@ -1,3 +1,4 @@
+import logoUrl from '../../assets/logo.jpeg'
 import { useEffect, useMemo, useState } from 'react'
 import { useSettingsStore } from '../../store/settingsStore'
 import { useUIStore } from '../../store/uiStore'
@@ -132,7 +133,7 @@ export function Sidebar({ }: SidebarProps) {
       <div className={cn('flex items-center border-b border-border/30 px-3 py-3 bg-background/60 backdrop-blur-xl', isMac && 'pt-10', isExpanded ? 'justify-between' : 'justify-center')}>
         {isExpanded && (
           <div className="flex items-center gap-2 min-w-0 flex-1 overflow-hidden">
-            <img src="/logo.png" alt="Apps for X" className="w-7 h-7 rounded-xl shrink-0 shadow-sm object-cover" />
+            <img src={logoUrl} alt="Apps for X" className="w-7 h-7 rounded-xl shrink-0 shadow-sm object-cover" />
             <span className="text-[13px] font-semibold text-foreground truncate leading-tight">Apps for X</span>
           </div>
         )}
@@ -184,13 +185,13 @@ export function Sidebar({ }: SidebarProps) {
                         : 'text-muted-foreground hover:bg-accent hover:text-foreground'
                     )}
                   >
-                    {/* ── Avatar: show TikTok profile picture when synced ── */}
+                    {/* ── Avatar: show X profile picture when synced ── */}
                     <div className="relative shrink-0">
                       <Avatar className={cn(
                         isExpanded ? 'h-8 w-8' : 'h-9 w-9',
                         isActive ? 'ring-2 ring-primary/50 ring-offset-1 ring-offset-background' : 'ring-1 ring-border/40'
                       )}>
-                        {/* AvatarImage loads the TikTok profile picture */}
+                        {/* AvatarImage loads the X profile picture */}
                         {account.avatarUrl && (
                           <AvatarImage
                             src={account.avatarUrl}

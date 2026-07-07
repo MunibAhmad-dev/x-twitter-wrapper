@@ -1,3 +1,4 @@
+import logoUrl from '../assets/logo.jpeg'
 import { useState } from 'react'
 import { useUIStore } from '../store/uiStore'
 import { useWorkspaceStore } from '../store/workspaceStore'
@@ -107,7 +108,7 @@ export function ICloudLogin() {
           }}
         >
           <img
-            src="/logo.png"
+            src={logoUrl}
             alt="Apps for X"
             style={{
               width: 72, height: 72, borderRadius: '16px',

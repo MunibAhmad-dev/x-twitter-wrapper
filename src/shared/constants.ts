@@ -13,10 +13,10 @@ export const BUNDLE_ID = "com.mihai.appsforx";
 // ── Legal / support links (shown in the About tab and Help menu) ───────────────
 // IMPORTANT: Replace PRIVACY_POLICY_URL with YOUR OWN hosted URL before submitting.
 // The root index.html in this repo is ready to upload to GitHub Pages.
-// Example: "https://munibahmad-dev.github.io/appsfortiktok-privacy/"
+// Example: "https://munibahmad-dev.github.io/x-Twitter-wrapper-privacy-page/"
 export const PRIVACY_POLICY_URL = "https://munibahmad-dev.github.io/x-Twitter-wrapper-privacy-page/";
 // Apple's standard EULA is the accepted Terms of Service for MAS apps using StoreKit subscriptions.
-// Do NOT point to TikTok's ToS — TikTok URLs may be blocked in Apple's review environment.
+// Apple's standard EULA covers MAS apps — do not point to a third-party ToS URL.
 export const TERMS_OF_SERVICE_URL = "https://www.apple.com/legal/internet-services/itunes/dev/stdeula/";
 export const SUPPORT_URL = "mailto:Grauremihai439@icloud.com";
 

@@ -163,7 +163,7 @@ export function PremiumModal({ onDismiss, onPurchaseSuccess, showCloseButton = t
       {/* 3 pricing cards */}
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 12, marginBottom: 20, alignItems: 'end' }}>
 
-        {/* Monthly — TikTok cyan */}
+        {/* Monthly */}
         <button
           onClick={() => !busy && purchase(IAP_PRODUCTS.PREMIUM_MONTHLY)}
           disabled={busy}
@@ -197,7 +197,7 @@ export function PremiumModal({ onDismiss, onPurchaseSuccess, showCloseButton = t
               </>}
         </button>
 
-        {/* Yearly — featured, TikTok red */}
+        {/* Yearly — featured */}
         <button
           onClick={() => !busy && purchase(IAP_PRODUCTS.PREMIUM_YEARLY)}
           disabled={busy}

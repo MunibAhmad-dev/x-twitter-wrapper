@@ -1,3 +1,4 @@
+import logoUrl from '../assets/logo.jpeg'
 import { useEffect, useState } from 'react'
 import { useUIStore } from '../store/uiStore'
 export function SplashScreen({ forceVisible }: { forceVisible?: boolean } = {}) {
@@ -68,7 +69,7 @@ export function SplashScreen({ forceVisible }: { forceVisible?: boolean } = {}) 
           }}
         />
         <img
-          src="/logo.png"
+          src={logoUrl}
           alt="Apps for X"
           style={{
             width: 96, height: 96, borderRadius: '22px',
