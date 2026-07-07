@@ -66,13 +66,13 @@ export function QuickReplyComposer() {
       setActiveWorkspaceId(wsId)
       setActiveWorkspaceAccountId(selectedAccountId)
 
-      // 2. Load Facebook for this account if not already loaded
-      await window.electronAPI?.workspace.loadFacebook(wsId, selectedAccountId)
+      // 2. Load X for this account if not already loaded
+      await window.electronAPI?.workspace.loadX(wsId, selectedAccountId)
 
       // 3. Switch to messaging view so the BrowserView is visible
       setActiveView('messaging')
 
-      // 4. Wait for the BrowserView to attach and Facebook to focus
+      // 4. Wait for the BrowserView to attach and X to focus
       await new Promise(r => setTimeout(r, 500))
 
       // 5. Inject text using native OS paste (most reliable with Lexical editor)

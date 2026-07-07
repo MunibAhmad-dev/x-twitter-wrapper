@@ -6,8 +6,8 @@ export const APP_STORE_REVIEW_URL = "https://apps.apple.com/app/id_PLACEHOLDER?a
 export const APP_VERSION = "1.3.0";
 export const MESSENGER_URL = "https://x.com";
 export const MESSENGER_CHAT_URL = "https://x.com/messages";
-export const FACEBOOK_LANGUAGE_URL = "https://x.com/settings/language";
-export const FACEBOOK_NOTIFICATIONS_URL = "https://x.com/messages";
+export const LANGUAGE_SETTINGS_URL = "https://x.com/settings/language";
+export const NOTIFICATIONS_URL = "https://x.com/messages";
 export const BUNDLE_ID = "com.graure.appsforx";
 
 // ── Legal / support links (shown in the About tab and Help menu) ───────────────
@@ -120,7 +120,7 @@ export const OPENAI_MODEL = 'gpt-4o-mini';
 // Shared localStorage key for Quick Reply drafts.
 // Used by both MessagingToolbar (inline) and QuickReplyComposer (full panel)
 // so drafts saved in one place always appear in the other.
-export const QUICK_REPLY_DRAFTS_KEY = 'igw_quick_reply_drafts';
+export const QUICK_REPLY_DRAFTS_KEY = 'appsforx_quick_reply_drafts';
 
 // User-agent pretending to be Safari for best X/Twitter compatibility
 export const USER_AGENT =

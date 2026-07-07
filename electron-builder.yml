@@ -55,7 +55,7 @@ mas:
   entitlements: build/entitlements.mas.plist
   entitlementsInherit: build/entitlements.mas.inherit.plist
   entitlementsLoginHelper: build/entitlements.mas.loginhelper.plist
-  provisioningProfile: appsforxprovisionaryprofile.provisionprofile
+  provisioningProfile: appsforxtwitter.provisionprofile
   icon: assets/icon.png
   # Do NOT set binaries: [] — electron-builder must auto-detect all Electron helper
   # binaries so they receive MAS entitlements (inherit). An explicit empty array

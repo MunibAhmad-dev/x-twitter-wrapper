@@ -1,6 +1,6 @@
 import { create } from 'zustand'
 
-const STORAGE_KEY = 'igw_notification_history'
+const STORAGE_KEY = 'appsforx_notification_history'
 const MAX_ENTRIES = 100
 
 export interface NotificationEntry {

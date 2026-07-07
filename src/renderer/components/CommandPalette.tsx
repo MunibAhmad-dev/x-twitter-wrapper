@@ -35,7 +35,7 @@ export function CommandPalette() {
     const account = workspaceAccounts.find(a => a.id === accountId)
     if (!account) return
     setActiveWorkspaceAccountId(accountId)
-    await window.electronAPI?.workspace.loadFacebook(account.workspaceId, accountId)
+    await window.electronAPI?.workspace.loadX(account.workspaceId, accountId)
     setActiveView('messaging')
     setCommandPaletteOpen(false)
   }

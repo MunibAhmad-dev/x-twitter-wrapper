@@ -34,7 +34,7 @@ export function ICloudLogin() {
           setWorkspaceAccounts(accounts || [])
 
           if (accounts && accounts.length > 0) {
-            await window.electronAPI?.workspace.loadFacebook(workspaces[0].id, accounts[0].id)
+            await window.electronAPI?.workspace.loadX(workspaces[0].id, accounts[0].id)
           } else {
             setCreateWorkspaceModalOpen(true)
           }

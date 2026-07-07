@@ -121,7 +121,7 @@ export function MessageSchedulerPanel() {
       // Load X in the background BrowserView (no view switch needed)
       setActiveWorkspaceId(account.workspaceId)
       setActiveWorkspaceAccountId(item.accountId)
-      await window.electronAPI?.workspace.loadFacebook(account.workspaceId, item.accountId)
+      await window.electronAPI?.workspace.loadX(account.workspaceId, item.accountId)
 
       // Give the BrowserView a moment to settle
       await new Promise(r => setTimeout(r, 800))

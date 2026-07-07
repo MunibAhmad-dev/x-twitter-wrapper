@@ -47,8 +47,8 @@ declare global {
         update: (id: string, updates: Partial<Workspace>) => Promise<Workspace | null>
         delete: (id: string) => Promise<boolean>
         setPremium: (id: string, isPremium: boolean) => Promise<boolean>
-        loadFacebook: (workspaceId: string, accountId?: string) => Promise<{ success: boolean; accountId?: string; error?: string }>
-        hideFacebook: () => Promise<boolean>
+        loadX: (workspaceId: string, accountId?: string) => Promise<{ success: boolean; accountId?: string; error?: string }>
+        hideX: () => Promise<boolean>
       }
       workspaceAccount: {
         add: (workspaceId: string, label: string, email?: string) => Promise<WorkspaceAccount | { error: string }>
@@ -60,7 +60,7 @@ declare global {
       browser: {
         goBack: () => Promise<{ canGoBack: boolean; canGoForward: boolean; url: string }>
         goForward: () => Promise<{ canGoBack: boolean; canGoForward: boolean; url: string }>
-        loadFacebook: () => Promise<{ success: boolean; canGoBack: boolean; canGoForward: boolean; url: string }>
+        loadX: () => Promise<{ success: boolean; canGoBack: boolean; canGoForward: boolean; url: string }>
         loadMessenger: () => Promise<{ success: boolean; canGoBack: boolean; canGoForward: boolean; url: string }>
         loadLanguageSettings: () => Promise<{ success: boolean; canGoBack: boolean; canGoForward: boolean; url: string }>
         reload: () => Promise<{ canGoBack: boolean; canGoForward: boolean; url: string }>

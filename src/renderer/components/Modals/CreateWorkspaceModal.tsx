@@ -39,12 +39,12 @@ export function CreateWorkspaceModal() {
         setActiveWorkspace(workspace)
         setActiveWorkspaceId(workspace.id)
         
-        // Create an account for this workspace and load Facebook
+        // Create an account for this workspace and load X
         const account = await window.electronAPI?.workspaceAccount.add(workspace.id, 'X Account')
         if (account && !('error' in account)) {
           setWorkspaceAccounts([account])
           setActiveWorkspaceAccountId(account.id)
-          await window.electronAPI?.workspace.loadFacebook(workspace.id, account.id)
+          await window.electronAPI?.workspace.loadX(workspace.id, account.id)
         }
         
         setCreateWorkspaceModalOpen(false)

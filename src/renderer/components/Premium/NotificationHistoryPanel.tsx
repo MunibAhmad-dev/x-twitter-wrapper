@@ -32,7 +32,7 @@ export function NotificationHistoryPanel() {
     markRead(entry.accountId)
     setActiveWorkspaceId(account.workspaceId)
     setActiveWorkspaceAccountId(entry.accountId)
-    await window.electronAPI?.workspace.loadFacebook(account.workspaceId, entry.accountId)
+    await window.electronAPI?.workspace.loadX(account.workspaceId, entry.accountId)
     setActiveView('messaging')
   }
 

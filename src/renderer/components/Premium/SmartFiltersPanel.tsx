@@ -54,7 +54,7 @@ export function SmartFiltersPanel() {
     if (!account) return
     setActiveWorkspaceId(account.workspaceId)
     setActiveWorkspaceAccountId(accountId)
-    await window.electronAPI?.workspace.loadFacebook(account.workspaceId, accountId)
+    await window.electronAPI?.workspace.loadX(account.workspaceId, accountId)
     setActiveView('messaging')
   }
 

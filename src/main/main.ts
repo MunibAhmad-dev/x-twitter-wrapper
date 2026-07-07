@@ -46,7 +46,7 @@ import { Account, Workspace, WorkspaceAccount } from '../shared/types';
 import {
   MESSENGER_URL,
   MESSENGER_CHAT_URL,
-  FACEBOOK_LANGUAGE_URL,
+  LANGUAGE_SETTINGS_URL,
   SIDEBAR_WIDTH_COLLAPSED,
   SIDEBAR_WIDTH_EXPANDED,
   TOP_BAR_HEIGHT,
@@ -189,7 +189,7 @@ function getInitials(label: string): string {
     .join('') || label[0]?.toUpperCase() || '?';
 }
 
-async function refreshFacebookAccountProfile(account: WorkspaceAccount, generation: number): Promise<void> {
+async function refreshXAccountProfile(account: WorkspaceAccount, generation: number): Promise<void> {
   if (!messengerView || !mainWindow) return;
   if (activeBrowserAccountId !== account.id || generation !== browserViewGeneration) return;
 
@@ -244,7 +244,7 @@ async function refreshFacebookAccountProfile(account: WorkspaceAccount, generati
         const avatarUrl = imageRoots
           .map((root) => getImageUrl(root.closest?.('a, div, span') || root))
           .filter(Boolean)
-          .find((url) => /cdninstagram|scontent|profile/i.test(url) && !/emoji|static/i.test(url)) || '';
+          .find((url) => /pbs\.twimg|twimg|profile/i.test(url) && !/emoji|static/i.test(url)) || '';
         const scriptText = Array.from(document.scripts)
           .map((script) => script.textContent || '')
           .filter((text) => /username|full_name|profile_pic_url|biography|viewer/i.test(text))
@@ -260,11 +260,11 @@ async function refreshFacebookAccountProfile(account: WorkspaceAccount, generati
         const avatarPatterns = [
           /"profile_pic_url_hd"\\s*:\\s*"([^"]+)"/,
           /"profile_pic_url"\\s*:\\s*"([^"]+)"/,
-          /"uri"\\s*:\\s*"(https?:\\\\\\/\\\\\\/[^"]*(?:cdninstagram|scontent)[^"]+)"/
+          /"uri"\\s*:\\s*"(https?:\\\\\\/\\\\\\/[^"]*(?:pbs\\.twimg|twimg)[^"]+)"/
         ];
         const scriptAvatarUrl = avatarPatterns
           .map((pattern) => decodeValue(scriptText.match(pattern)?.[1] || ''))
-          .find((url) => /cdninstagram|scontent/i.test(url) && !/emoji|static/i.test(url)) || '';
+          .find((url) => /pbs\.twimg|twimg/i.test(url) && !/emoji|static/i.test(url)) || '';
         const domName = explicitNameRoots.map(getLabel).find(isUsableName) || '';
         return { name: scriptName || domName, avatarUrl: scriptAvatarUrl || avatarUrl };
       })();
@@ -296,24 +296,24 @@ async function refreshFacebookAccountProfile(account: WorkspaceAccount, generati
       mainWindow.webContents.send('workspaceAccounts:updated', authManager.listWorkspaceAccounts(updated.workspaceId));
     }
   } catch (err) {
-    console.warn('[InstagramProfile] Could not refresh account profile:', err instanceof Error ? err.message : String(err));
+    console.warn('[XProfile] Could not refresh account profile:', err instanceof Error ? err.message : String(err));
   }
 }
 
-function scheduleFacebookProfileRefresh(account: WorkspaceAccount, delay = 2500): void {
+function scheduleXProfileRefresh(account: WorkspaceAccount, delay = 2500): void {
   const currentUrl = messengerView?.webContents.getURL() ?? '';
   if (currentUrl && !currentUrl.includes('x.com')) return;
 
   const generation = browserViewGeneration;
-  setTimeout(() => refreshFacebookAccountProfile(account, generation), delay);
-  setTimeout(() => refreshFacebookAccountProfile(account, generation), delay + 3500);
+  setTimeout(() => refreshXAccountProfile(account, generation), delay);
+  setTimeout(() => refreshXAccountProfile(account, generation), delay + 3500);
 }
 
 // ── Messenger BrowserView ─────────────────────────────────────────────────────
-function createFacebookView(account: WorkspaceAccount | Account): void {
-  console.log('[createInstagramView] called', { accountId: account.id, mainWindowExists: !!mainWindow });
+function createXView(account: WorkspaceAccount | Account): void {
+  console.log('[createXView] called', { accountId: account.id, mainWindowExists: !!mainWindow });
   if (!mainWindow) {
-    console.log('[createInstagramView] mainWindow is null, returning early');
+    console.log('[createXView] mainWindow is null, returning early');
     return;
   }
 
@@ -347,26 +347,26 @@ function createFacebookView(account: WorkspaceAccount | Account): void {
   // repositionMessengerView() checks isMessagingViewActive and will only
   // attach the view if the renderer is currently showing the messaging view.
   // This prevents the BrowserView from obscuring Dashboard and tool panels
-  // while still pre-loading the Facebook session in the background.
+  // while still pre-loading the X session in the background.
   browserViewAttached = false;
   repositionMessengerView();
-  console.log('[createInstagramView] BrowserView created, attached:', browserViewAttached);
+  console.log('[createXView] BrowserView created, attached:', browserViewAttached);
 
   messengerView.webContents.loadURL(MESSENGER_URL);
-  console.log('[createInstagramView] loadURL called');
+  console.log('[createXView] loadURL called');
 
   if ('workspaceId' in account) {
     messengerView.webContents.on('did-finish-load', () => {
       sendBrowserState();
-      scheduleFacebookProfileRefresh(account, 1800);
+      scheduleXProfileRefresh(account, 1800);
     });
     messengerView.webContents.on('did-navigate', () => {
       sendBrowserState();
-      scheduleFacebookProfileRefresh(account, 1800);
+      scheduleXProfileRefresh(account, 1800);
     });
     messengerView.webContents.on('did-navigate-in-page', () => {
       sendBrowserState();
-      scheduleFacebookProfileRefresh(account, 1800);
+      scheduleXProfileRefresh(account, 1800);
     });
   }
 
@@ -424,7 +424,7 @@ function createFacebookView(account: WorkspaceAccount | Account): void {
 
 // Legacy function for old Account type
 function createMessengerView(account: Account): void {
-  createFacebookView(account);
+  createXView(account);
 }
 
 let browserViewAttached = false;
@@ -443,7 +443,7 @@ function repositionMessengerView(): void {
       mainWindow.removeBrowserView(messengerView);
       browserViewAttached = false;
       // Return keyboard/clipboard focus to the renderer so the user can
-      // Cmd+V into panel textareas immediately after switching away from Instagram.
+      // Cmd+V into panel textareas immediately after switching away from X.
       mainWindow.webContents.focus();
     }
     return;
@@ -504,7 +504,7 @@ function initializeAccounts(): void {
     activeAccountId = active.id;
 
     // We intentionally DO NOT call createMessengerView(active) here.
-    // The React frontend handles calling `workspace:loadFacebook` securely.
+    // The React frontend handles calling `workspace:loadX` securely.
   }
 }
 
@@ -532,7 +532,7 @@ function setupIPC(): void {
     return getBrowserState();
   });
 
-  ipcMain.handle('browser:loadFacebook', async () => {
+  ipcMain.handle('browser:loadX', async () => {
     if (!messengerView) return { success: false, ...getBrowserState() };
     await messengerView.webContents.loadURL(MESSENGER_URL);
     return { success: true, ...getBrowserState() };
@@ -546,7 +546,7 @@ function setupIPC(): void {
 
   ipcMain.handle('browser:loadLanguageSettings', async () => {
     if (!messengerView) return { success: false, ...getBrowserState() };
-    await messengerView.webContents.loadURL(FACEBOOK_LANGUAGE_URL);
+    await messengerView.webContents.loadURL(LANGUAGE_SETTINGS_URL);
     return { success: true, ...getBrowserState() };
   });
 
@@ -672,10 +672,10 @@ function setupIPC(): void {
     return true;
   });
 
-  // ── Inject text into Facebook/Messenger message input ───────────────────
+  // ── Inject text into X message input ─────────────────────────────────────
   //
   // WHY execCommand DOESN'T WORK:
-  // Facebook Messenger uses the Lexical rich-text editor which maintains its
+  // X uses a rich-text editor which maintains its
   // own internal React state. document.execCommand('insertText') updates the
   // DOM visually but bypasses Lexical's state, so the send button never
   // activates and the text is lost.
@@ -687,12 +687,12 @@ function setupIPC(): void {
   // 3. Use JavaScript to find the message input and click/focus it.
   // 4. Call webContents.paste() — this sends a native OS paste command
   //    (Cmd+V equivalent) which Lexical responds to correctly.
-  // ── Inject text into Facebook/Messenger message input ───────────────────
+  // ── Inject text into X message input ─────────────────────────────────────
   //
   // Uses webContents.insertText() — Electron's dedicated API for inserting
   // text into the focused element. Unlike execCommand/paste, insertText goes
   // through the browser engine's native InputEvent pipeline which Lexical
-  // (Facebook Messenger's editor) correctly handles.
+  // (X's editor) correctly handles.
   //
   // Flow:
   //   1. Focus the BrowserView at OS level
@@ -1203,9 +1203,9 @@ No markdown, no extra text.`,
     return authManager.setWorkspacePremium(workspaceId, isPremium);
   });
 
-  // Workspace Facebook - Load Facebook in BrowserView
-  ipcMain.handle('workspace:loadFacebook', (_e, workspaceId: string, accountId?: string) => {
-    console.log('[IPC] workspace:loadFacebook START', { workspaceId, accountId, mainWindow: !!mainWindow });
+  // Workspace X - Load X in BrowserView
+  ipcMain.handle('workspace:loadX', (_e, workspaceId: string, accountId?: string) => {
+    console.log('[IPC] workspace:loadX START', { workspaceId, accountId, mainWindow: !!mainWindow });
     try {
       console.log('[IPC] inside try, mainWindow:', !!mainWindow);
       // Get the account to use
@@ -1227,7 +1227,7 @@ No markdown, no extra text.`,
       }
 
       // Create BrowserView with this account's partition
-      createFacebookView(account);
+      createXView(account);
       return { success: true, accountId: account.id };
     } catch (err) {
       console.error('Failed to load X:', err);
@@ -1235,8 +1235,8 @@ No markdown, no extra text.`,
     }
   });
 
-  ipcMain.handle('workspace:hideFacebook', () => {
-    console.log('[IPC] workspace:hideFacebook called');
+  ipcMain.handle('workspace:hideX', () => {
+    console.log('[IPC] workspace:hideX called');
     if (messengerView && mainWindow) {
       browserViewGeneration += 1;
       activeBrowserAccountId = null;
@@ -1244,7 +1244,7 @@ No markdown, no extra text.`,
       try { messengerView.webContents.loadURL('about:blank'); } catch { /* ignore */ }
       messengerView = null;
       browserViewAttached = false;
-      console.log('[IPC] workspace:hideFacebook: BrowserView destroyed');
+      console.log('[IPC] workspace:hideX: BrowserView destroyed');
     }
     return true;
   });

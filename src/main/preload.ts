@@ -118,11 +118,11 @@ contextBridge.exposeInMainWorld('electronAPI', {
     setPremium: (id: string, isPremium: boolean): Promise<boolean> =>
       ipcRenderer.invoke('workspace:setPremium', id, isPremium),
 
-    loadFacebook: (workspaceId: string, accountId?: string): Promise<{ success: boolean; accountId?: string; error?: string }> =>
-      ipcRenderer.invoke('workspace:loadFacebook', workspaceId, accountId),
+    loadX: (workspaceId: string, accountId?: string): Promise<{ success: boolean; accountId?: string; error?: string }> =>
+      ipcRenderer.invoke('workspace:loadX', workspaceId, accountId),
 
-    hideFacebook: (): Promise<boolean> =>
-      ipcRenderer.invoke('workspace:hideFacebook'),
+    hideX: (): Promise<boolean> =>
+      ipcRenderer.invoke('workspace:hideX'),
   },
 
   // ── Workspace Accounts ───────────────────────────────────────────────────
@@ -152,8 +152,8 @@ contextBridge.exposeInMainWorld('electronAPI', {
     goForward: (): Promise<{ canGoBack: boolean; canGoForward: boolean; url: string }> =>
       ipcRenderer.invoke('browser:goForward'),
 
-    loadFacebook: (): Promise<{ success: boolean; canGoBack: boolean; canGoForward: boolean; url: string }> =>
-      ipcRenderer.invoke('browser:loadFacebook'),
+    loadX: (): Promise<{ success: boolean; canGoBack: boolean; canGoForward: boolean; url: string }> =>
+      ipcRenderer.invoke('browser:loadX'),
 
     loadMessenger: (): Promise<{ success: boolean; canGoBack: boolean; canGoForward: boolean; url: string }> =>
       ipcRenderer.invoke('browser:loadMessenger'),

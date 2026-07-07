@@ -73,7 +73,7 @@ export function Sidebar({ }: SidebarProps) {
       if (!activeAccount) { setActiveView('dashboard'); return; }
       const wsId = workspaces[0]?.id || activeAccount.workspaceId
       setActiveWorkspaceId(wsId)
-      await window.electronAPI?.workspace.loadFacebook(wsId, activeAccount.id)
+      await window.electronAPI?.workspace.loadX(wsId, activeAccount.id)
     }
     setActiveView(view)
   }
@@ -82,7 +82,7 @@ export function Sidebar({ }: SidebarProps) {
     const wsId = workspaces[0]?.id || account.workspaceId
     setActiveWorkspaceId(wsId)
     setActiveWorkspaceAccountId(account.id)
-    await window.electronAPI?.workspace.loadFacebook(wsId, account.id)
+    await window.electronAPI?.workspace.loadX(wsId, account.id)
     setActiveView('messaging')
   }
 
@@ -94,7 +94,7 @@ export function Sidebar({ }: SidebarProps) {
     const accounts = await window.electronAPI?.workspaceAccount.list(wsId) || []
     setWorkspaceAccounts(accounts)
     setActiveWorkspaceAccountId(newAccount.id)
-    await window.electronAPI?.workspace.loadFacebook(wsId, newAccount.id)
+    await window.electronAPI?.workspace.loadX(wsId, newAccount.id)
     setActiveView('messaging')
   }
 
@@ -103,13 +103,13 @@ export function Sidebar({ }: SidebarProps) {
     const wsId = accountToRemove.workspaceId
     setAccountToRemove(null)
     setActiveWorkspaceAccountId(null)
-    await window.electronAPI?.workspace.hideFacebook()
+    await window.electronAPI?.workspace.hideX()
     await window.electronAPI?.workspaceAccount.remove(accountToRemove.id)
     const remaining = (await window.electronAPI?.workspaceAccount.list(wsId)) || []
     setWorkspaceAccounts(remaining)
     if (remaining.length > 0) {
       setActiveWorkspaceAccountId(remaining[0].id)
-      await window.electronAPI?.workspace.loadFacebook(wsId, remaining[0].id)
+      await window.electronAPI?.workspace.loadX(wsId, remaining[0].id)
       setActiveView('messaging')
     } else {
       setActiveView('dashboard')

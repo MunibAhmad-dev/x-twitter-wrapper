@@ -53,7 +53,7 @@ export function Dashboard() {
     const wsId = workspaces[0]?.id || account.workspaceId
     setActiveWorkspaceId(wsId)
     setActiveWorkspaceAccountId(accountId)
-    await window.electronAPI?.workspace.loadFacebook(wsId, accountId)
+    await window.electronAPI?.workspace.loadX(wsId, accountId)
     setActiveView('messaging')
   }
 
@@ -75,7 +75,7 @@ export function Dashboard() {
     const allAccounts = await window.electronAPI?.workspaceAccount.list(wsId) || []
     setWorkspaceAccounts(allAccounts)
     setActiveWorkspaceAccountId(newAccount.id)
-    await window.electronAPI?.workspace.loadFacebook(wsId, newAccount.id)
+    await window.electronAPI?.workspace.loadX(wsId, newAccount.id)
     setActiveView('messaging')
     // Profile picture and real name sync automatically after X loads
   }

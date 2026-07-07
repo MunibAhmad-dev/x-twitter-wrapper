@@ -38,13 +38,13 @@ export function OnboardingScreen({ onComplete }: OnboardingScreenProps) {
         if (accts.length > 0) {
           setWorkspaceAccounts(accts)
           setActiveWorkspaceAccountId(accts[0].id)
-          await window.electronAPI?.workspace.loadFacebook(ws[0].id, accts[0].id)
+          await window.electronAPI?.workspace.loadX(ws[0].id, accts[0].id)
         } else {
           const a = await window.electronAPI?.workspaceAccount.add(ws[0].id, 'X Account')
           if (a && !('error' in a)) {
             setWorkspaceAccounts([a])
             setActiveWorkspaceAccountId(a.id)
-            await window.electronAPI?.workspace.loadFacebook(ws[0].id, a.id)
+            await window.electronAPI?.workspace.loadX(ws[0].id, a.id)
           }
         }
       } else {
@@ -55,7 +55,7 @@ export function OnboardingScreen({ onComplete }: OnboardingScreenProps) {
           if (a && !('error' in a)) {
             setWorkspaceAccounts([a])
             setActiveWorkspaceAccountId(a.id)
-            await window.electronAPI?.workspace.loadFacebook(newWs.id, a.id)
+            await window.electronAPI?.workspace.loadX(newWs.id, a.id)
           }
         }
       }

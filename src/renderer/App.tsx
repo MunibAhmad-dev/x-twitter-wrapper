@@ -170,7 +170,7 @@ export function App() {
           if (accounts?.length > 0) {
             setActiveWorkspaceAccountId(accounts[0].id)
             // Pre-load X in the BrowserView so it's ready when user clicks messaging
-            window.electronAPI.workspace.loadFacebook(ws.id, accounts[0].id).catch(() => {})
+            window.electronAPI.workspace.loadX(ws.id, accounts[0].id).catch(() => {})
           }
         } else {
           // First-time user: auto-create workspace silently
@@ -186,7 +186,7 @@ export function App() {
                 if (newAcct && !('error' in newAcct)) {
                   setWorkspaceAccounts([newAcct])
                   setActiveWorkspaceAccountId(newAcct.id)
-                  window.electronAPI.workspace.loadFacebook(newWs.id, newAcct.id).catch(() => {})
+                  window.electronAPI.workspace.loadX(newWs.id, newAcct.id).catch(() => {})
                   break
                 }
               }

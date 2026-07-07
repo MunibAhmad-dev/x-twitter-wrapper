@@ -26,7 +26,7 @@ export function Paywall() {
         if (accts.length > 0) {
           setWorkspaceAccounts(accts)
           setActiveWorkspaceAccountId(accts[0].id)
-          await window.electronAPI?.workspace.loadFacebook(ws[0].id, accts[0].id)
+          await window.electronAPI?.workspace.loadX(ws[0].id, accts[0].id)
         }
       }
     } catch {}
