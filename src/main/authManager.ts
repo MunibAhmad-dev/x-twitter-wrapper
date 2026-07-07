@@ -1,6 +1,7 @@
 import { v4 as uuidv4 } from 'uuid';
 import { Store } from './store';
 import type { AppSettings, User, Workspace, WorkspaceAccount, AppleUser } from '../shared/types';
+import { IAP_ENABLED } from '../shared/constants';
 
 export class AuthManager {
   private store: Store;
@@ -175,8 +176,7 @@ export class AuthManager {
 
   // Workspace accounts (X accounts)
   addWorkspaceAccount(workspaceId: string, label: string, email?: string): WorkspaceAccount | { error: string } {
-    this.refreshCurrentUserId();
-    if (!this.currentUserId) return { error: 'Not logged in' };
+    this.ensureAutoLogin();
 
     const workspace = this.getWorkspace(workspaceId);
     if (!workspace) return { error: 'Workspace not found' };
@@ -184,7 +184,7 @@ export class AuthManager {
     // Check limit for free tier (1 account) — bypass when IAP is disabled
     const accounts = this.listWorkspaceAccounts(workspaceId);
     const settings = this.store.get<AppSettings>('settings');
-    const hasGlobalPremium = settings?.isPremium === true || !require('../shared/constants').IAP_ENABLED;
+    const hasGlobalPremium = settings?.isPremium === true || !IAP_ENABLED;
     if (!hasGlobalPremium && !workspace.isPremium && accounts.length >= 1) {
       return { error: 'Free tier limited to 1 account. Upgrade to Premium for more.' };
     }
