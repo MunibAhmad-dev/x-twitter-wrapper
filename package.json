@@ -1,7 +1,7 @@
 {
   "name": "apps-for-x",
   "productName": "Apps for X",
-  "version": "1.4.0",
+  "version": "1.5.0",
   "description": "Apps for X – Multi-account X (Twitter) desktop client with productivity tools",
   "main": "dist-electron/main.js",
   "author": "Apps for X",

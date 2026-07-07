@@ -208,20 +208,15 @@ export function App() {
     init()
   }, [])
 
-  // ── Review prompt: show 60 s after first install, once only ─────────────
+  // ── Review prompt: show on 3rd app launch, once only ────────────────────
   useEffect(() => {
     if (localStorage.getItem('reviewRated') || localStorage.getItem('reviewPromptShown')) return
-    const DELAY_MS = 60_000
-    const stored = localStorage.getItem('firstLaunchTime')
-    const firstLaunch = stored ? parseInt(stored, 10) : Date.now()
-    if (!stored) localStorage.setItem('firstLaunchTime', String(firstLaunch))
-    const elapsed = Date.now() - firstLaunch
-    const remaining = Math.max(0, DELAY_MS - elapsed)
-    const timer = setTimeout(() => {
+    const launches = parseInt(localStorage.getItem('appLaunchCount') || '0', 10) + 1
+    localStorage.setItem('appLaunchCount', String(launches))
+    if (launches >= 3) {
       localStorage.setItem('reviewPromptShown', '1')
       setReviewModalOpen(true)
-    }, remaining)
-    return () => clearTimeout(timer)
+    }
   }, [])
 
   // ── ⌘K global shortcut ──────────────────────────────────────────────────

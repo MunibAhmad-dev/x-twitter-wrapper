@@ -181,10 +181,10 @@ export class AuthManager {
     const workspace = this.getWorkspace(workspaceId);
     if (!workspace) return { error: 'Workspace not found' };
 
-    // Check limit for free tier (1 account)
+    // Check limit for free tier (1 account) — bypass when IAP is disabled
     const accounts = this.listWorkspaceAccounts(workspaceId);
     const settings = this.store.get<AppSettings>('settings');
-    const hasGlobalPremium = settings?.isPremium === true;
+    const hasGlobalPremium = settings?.isPremium === true || !require('../shared/constants').IAP_ENABLED;
     if (!hasGlobalPremium && !workspace.isPremium && accounts.length >= 1) {
       return { error: 'Free tier limited to 1 account. Upgrade to Premium for more.' };
     }
