@@ -23,7 +23,7 @@
   <true/>
 
   <!-- Microphone: required for voice messages and voice calls in demo mode -->
-  <key>com.apple.security.device.audio-input</key>
+  <key>com.apple.security.device.microphone</key>
   <true/>
 
   <!-- Camera: required for video messages and video calls in demo mode -->

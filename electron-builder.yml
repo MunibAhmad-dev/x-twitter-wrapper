@@ -36,6 +36,9 @@ mac:
   gatekeeperAssess: true
   notarize:
     teamId: L284ZYR49L
+  extendInfo:
+    NSMicrophoneUsageDescription: "Used for voice messages and audio calls on X."
+    NSCameraUsageDescription: "Used for video messages and video calls on X."
 
 dmg:
   title: Apps for X
@@ -54,6 +57,9 @@ dmg:
 # ─── Mac App Store ─────────────────────────────────────────────────────────────
 mas:
   type: distribution
+  extendInfo:
+    NSMicrophoneUsageDescription: "Used for voice messages and audio calls on X."
+    NSCameraUsageDescription: "Used for video messages and video calls on X."
   identity: "Apple Distribution: Mihai Graure (L284ZYR49L)"
   hardenedRuntime: false
   entitlements: build/entitlements.mas.plist

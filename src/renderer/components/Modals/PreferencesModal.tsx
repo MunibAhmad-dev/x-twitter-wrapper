@@ -11,6 +11,7 @@ import { Button } from '../ui/button'
 import { Switch } from '../ui/switch'
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar'
 import { APP_VERSION, APP_STORE_REVIEW_URL, PRIVACY_POLICY_URL, TERMS_OF_SERVICE_URL, SUPPORT_URL } from '../../../shared/constants'
+import { resetReviewPrompt } from '../../lib/reviewPrompt'
 import {
   Settings, User, Bell, Palette, CreditCard, Info,
   Trash2, ExternalLink, CheckCircle2, FlaskConical, Lock, Sparkles, MessageSquareText,
@@ -475,7 +476,7 @@ export function PreferencesModal({ onShowReview }: { onShowReview?: () => void }
                         </button>
                       ))}
                       <button
-                        onClick={() => { close(); onShowReview?.() }}
+                        onClick={() => { close(); resetReviewPrompt(); onShowReview?.() }}
                         className="w-full flex items-center justify-between p-3.5 rounded-xl bg-card border border-border/40 hover:border-border text-sm font-medium text-foreground transition-colors group"
                       >
                         Rate Apps for X

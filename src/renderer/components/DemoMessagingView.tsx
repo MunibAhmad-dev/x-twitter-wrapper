@@ -268,23 +268,41 @@ function VoicePlayer({ dataUrl, isMine, onDelete }: { dataUrl: string; isMine: b
   )
 }
 
+// ─── Video blob store ─────────────────────────────────────────────────────────
+// Keep raw Blobs in a module-level Map so VideoPlayer can create fresh blob URLs
+// without any FileReader / base64 / atob conversion (all of which can be blocked
+// or corrupted by Electron's CSP).
+const videoBlobStore = new Map<string, Blob>()
+
 // ─── VideoPlayer ──────────────────────────────────────────────────────────────
 
 function VideoPlayer({ dataUrl, isMine, onDelete }: { dataUrl: string; isMine: boolean; onDelete?: () => void }) {
+  const [blobUrl, setBlobUrl] = useState('')
+
+  useEffect(() => {
+    const id = dataUrl.startsWith('blobref:') ? dataUrl.slice(8) : null
+    const blob = id ? videoBlobStore.get(id) : null
+    console.log('[VideoPlayer] id=', id, 'blob=', blob ? `size:${blob.size} type:${blob.type}` : 'NOT FOUND')
+    if (!blob) return
+    const url = URL.createObjectURL(blob)
+    console.log('[VideoPlayer] blobUrl=', url)
+    setBlobUrl(url)
+    return () => URL.revokeObjectURL(url)
+  }, [dataUrl])
+
   return (
     <div style={{ position: 'relative', width: 220 }}>
-      <video
-        src={dataUrl}
-        controls
-        playsInline
-        style={{ width: '100%', borderRadius: 12, display: 'block', background: '#000' }}
-      />
+      {!blobUrl
+        ? <div style={{ width: '100%', height: 80, borderRadius: 12, background: '#111', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 20 }}>⏳</div>
+        : <video key={blobUrl} src={blobUrl} controls playsInline preload="auto"
+            style={{ width: '100%', borderRadius: 12, display: 'block', background: '#000' }} />
+      }
       {onDelete && (
         <button onClick={onDelete} title="Delete" style={{
           position: 'absolute', top: 6, right: 6,
           background: 'rgba(0,0,0,0.65)', border: 'none', borderRadius: '50%',
           width: 26, height: 26, cursor: 'pointer', color: 'white', fontSize: 12,
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 2,
         }}>🗑</button>
       )}
     </div>
@@ -380,6 +398,7 @@ export function DemoMessagingView() {
 
   const deleteMessage = (msgId: string, type: 'voice' | 'video') => {
     if (type === 'voice') deleteMedia(msgId)
+    if (type === 'video') videoBlobStore.delete(msgId)
     setConvos(prev => prev.map(c =>
       c.id === activeId ? { ...c, messages: c.messages.filter(m => m.id !== msgId) } : c
     ))
@@ -442,29 +461,29 @@ export function DemoMessagingView() {
 
   const startCallRecording = () => {
     const stream = callStreamRef.current
-    if (!stream) return
-    const mime = bestMime('video')
-    const recorder = new MediaRecorder(stream, mime ? { mimeType: mime } : undefined)
+    if (!stream || callRecording) return
     callRecChunksRef.current = []
+    const recorder = new MediaRecorder(stream)
     recorder.ondataavailable = e => { if (e.data.size > 0) callRecChunksRef.current.push(e.data) }
-    recorder.start()
+    recorder.onstop = () => {
+      const blob = new Blob(callRecChunksRef.current, { type: recorder.mimeType })
+      const id = Date.now().toString()
+      videoBlobStore.set(id, blob)
+      addMessage({ id, sender: 'me', type: 'video', dataUrl: `blobref:${id}`, time: nowTime() })
+    }
+    recorder.start(100)
     callRecorderRef.current = recorder
-    setCallRecording(true); setCallRecTimer(0)
+    setCallRecording(true)
+    setCallRecTimer(0)
     callRecIntervalRef.current = setInterval(() => setCallRecTimer(t => t + 1), 1000)
   }
 
   const stopCallRecording = () => {
-    const recorder = callRecorderRef.current
-    if (!recorder) return
-    recorder.onstop = () => {
-      const blob = new Blob(callRecChunksRef.current, { type: recorder.mimeType || 'video/webm' })
-      const blobUrl = URL.createObjectURL(blob)
-      addMessage({ id: Date.now().toString(), sender: 'me', type: 'video', dataUrl: blobUrl, time: nowTime() })
-      callRecChunksRef.current = []
-    }
-    recorder.stop()
     if (callRecIntervalRef.current) clearInterval(callRecIntervalRef.current)
-    setCallRecording(false); setCallRecTimer(0); callRecorderRef.current = null
+    setCallRecording(false)
+    setCallRecTimer(0)
+    callRecorderRef.current?.stop()
+    callRecorderRef.current = null
   }
 
   // ── VOICE MESSAGE ────────────────────────────────────────────────────────────
@@ -512,34 +531,45 @@ export function DemoMessagingView() {
   const startVideoRec = async () => {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true })
+      console.log('[VideoRec] got stream, tracks:', stream.getTracks().map(t => `${t.kind}:${t.label}`))
       recStreamRef.current = stream
-      const mime = bestMime('video')
-      const recorder = new MediaRecorder(stream, mime ? { mimeType: mime } : undefined)
       recChunksRef.current = []
-      recorder.ondataavailable = e => { if (e.data.size > 0) recChunksRef.current.push(e.data) }
-      recorder.start()
+      const mime = bestMime('video')
+      console.log('[VideoRec] mimeType to use:', mime || '(browser default)')
+      const recorder = new MediaRecorder(stream, mime ? { mimeType: mime } : undefined)
+      recorder.ondataavailable = e => {
+        console.log('[VideoRec] chunk size:', e.data.size)
+        if (e.data.size > 0) recChunksRef.current.push(e.data)
+      }
+      recorder.onstop = () => {
+        const s = recStreamRef.current
+        s?.getTracks().forEach(t => t.stop())
+        if (recStreamRef.current === stream) recStreamRef.current = null
+        console.log('[VideoRec] onstop — chunks:', recChunksRef.current.length, 'mimeType:', recorder.mimeType)
+        const blob = new Blob(recChunksRef.current, { type: recorder.mimeType })
+        console.log('[VideoRec] blob size:', blob.size, 'type:', blob.type)
+        if (blob.size === 0) { console.warn('[VideoRec] blob is empty — dropping'); return }
+        const id = Date.now().toString()
+        videoBlobStore.set(id, blob)
+        addMessage({ id, sender: 'me', type: 'video', dataUrl: `blobref:${id}`, time: nowTime() })
+      }
+      recorder.start(100)
+      console.log('[VideoRec] recording started')
       recorderRef.current = recorder
-      setRecMode('video'); setRecTimer(0)
+      setRecMode('video')
+      setRecTimer(0)
       recIntervalRef.current = setInterval(() => setRecTimer(t => t + 1), 1000)
-    } catch {}
+    } catch (err) {
+      console.error('[VideoRec] failed to start:', err)
+    }
   }
 
   const stopVideoRec = () => {
-    const recorder = recorderRef.current
-    const stream = recStreamRef.current
-    if (!recorder || !stream) return
-    const captured = stream
-    recorder.onstop = () => {
-      if (recStreamRef.current === captured) recStreamRef.current = null
-      captured.getTracks().forEach(t => t.stop())
-      const blob = new Blob(recChunksRef.current, { type: recorder.mimeType || 'video/webm' })
-      const blobUrl = URL.createObjectURL(blob)
-      addMessage({ id: Date.now().toString(), sender: 'me', type: 'video', dataUrl: blobUrl, time: nowTime() })
-      recChunksRef.current = []
-    }
-    recorder.stop()
-    if (recIntervalRef.current) clearInterval(recIntervalRef.current)
-    setRecMode(null); setRecTimer(0); recorderRef.current = null
+    clearInterval(recIntervalRef.current!)
+    setRecMode(null)
+    setRecTimer(0)
+    recorderRef.current?.stop()
+    recorderRef.current = null
   }
 
   const handleContextMenu = useCallback((e: React.MouseEvent) => {
