@@ -12,6 +12,7 @@ import { Toaster } from 'sonner'
 import { Sidebar } from './components/Sidebar/Sidebar'
 import { WorkspaceView } from './components/WorkspaceView'
 import { PreferencesModal } from './components/Modals/PreferencesModal'
+import { ReviewModal } from './components/Modals/ReviewModal'
 import { DisclaimerModal } from './components/Modals/DisclaimerModal'
 import { CreateWorkspaceModal } from './components/Modals/CreateWorkspaceModal'
 import { FeedbackModal } from './components/Modals/FeedbackModal'
@@ -28,7 +29,6 @@ import {
   recordReviewLaunch,
   isThirdReviewLaunch,
   shouldShowReview,
-  requestNativeReview,
   resetReviewPrompt,
   REVIEW_SESSION_KEY,
 } from './lib/reviewPrompt'
@@ -46,6 +46,7 @@ export function App() {
     setUnreadCounts,
     isFeedbackModalOpen,
     setFeedbackModalOpen,
+    setReviewModalOpen,
   } = useUIStore()
   const { setWorkspaces, setWorkspaceAccounts, setActiveWorkspaceAccountId } = useWorkspaceStore()
   const { addEntry: addNotificationEntry, markRead: markNotificationRead } = useNotificationStore()
@@ -215,11 +216,11 @@ export function App() {
     init()
   }, [])
 
-  // ── Direct App Store review: 3rd launch OR 20 min in session ────────────
+  // ── Review modal: 3rd launch OR 20 min in session ────────────────────────
   useEffect(() => {
     const timers: ReturnType<typeof setTimeout>[] = []
     migrateReviewPromptState()
-    const trigger = () => { if (shouldShowReview(APP_VERSION)) void requestNativeReview(APP_VERSION) }
+    const trigger = () => { if (shouldShowReview(APP_VERSION)) setReviewModalOpen(true) }
     const count = recordReviewLaunch()
     if (isThirdReviewLaunch(count)) timers.push(setTimeout(trigger, 5_000))
     localStorage.setItem(REVIEW_SESSION_KEY, String(Date.now()))
@@ -227,13 +228,13 @@ export function App() {
     return () => timers.forEach(clearTimeout)
   }, [])
 
-  // ── X login: wait 4 s then invoke review directly ────────────────────────
+  // ── X login: wait 4 s then show review modal ─────────────────────────────
   useEffect(() => {
     let timer: ReturnType<typeof setTimeout> | undefined
     const unsubscribe = window.electronAPI?.onXLoginSuccess?.(() => {
       if (timer) clearTimeout(timer)
       timer = setTimeout(() => {
-        if (shouldShowReview(APP_VERSION)) void requestNativeReview(APP_VERSION)
+        if (shouldShowReview(APP_VERSION)) setReviewModalOpen(true)
       }, 4_000)
     })
     return () => { if (timer) clearTimeout(timer); unsubscribe?.() }
@@ -252,11 +253,11 @@ export function App() {
         window.electronAPI?.settings.update({ hasSeenOnboarding: false, isPremium: false })
           .then(() => setShowOnboarding(true))
       }
-      // Dev-only: ⌘⇧R → reset review state + invoke review immediately
+      // Dev-only: ⌘⇧R → reset review state + open review modal
       if ((e.metaKey || e.ctrlKey) && e.shiftKey && e.key === 'R') {
         e.preventDefault()
         resetReviewPrompt()
-        void requestNativeReview(APP_VERSION)
+        setReviewModalOpen(true)
       }
     }
     window.addEventListener('keydown', handler)
@@ -280,7 +281,8 @@ export function App() {
       <WorkspaceView />
 
       {/* ── Modals ─────────────────────────────────────────────────────── */}
-      <PreferencesModal onShowReview={() => void requestNativeReview(APP_VERSION)} />
+      <PreferencesModal onShowReview={() => { resetReviewPrompt(); setReviewModalOpen(true) }} />
+      <ReviewModal />
       <DisclaimerModal />
       <CreateWorkspaceModal />
       <FeedbackModal open={isFeedbackModalOpen} onClose={() => setFeedbackModalOpen(false)} />
