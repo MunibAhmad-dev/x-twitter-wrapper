@@ -10,10 +10,10 @@ import {
 import { Button } from '../ui/button'
 import { Switch } from '../ui/switch'
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar'
-import { APP_VERSION, PRIVACY_POLICY_URL, TERMS_OF_SERVICE_URL, SUPPORT_URL } from '../../../shared/constants'
+import { APP_VERSION, APP_STORE_REVIEW_URL, PRIVACY_POLICY_URL, TERMS_OF_SERVICE_URL, SUPPORT_URL } from '../../../shared/constants'
 import {
   Settings, User, Bell, Palette, CreditCard, Info,
-  Trash2, ExternalLink, CheckCircle2, FlaskConical, Lock, Sparkles,
+  Trash2, ExternalLink, CheckCircle2, FlaskConical, Lock, Sparkles, MessageSquareText,
 } from 'lucide-react'
 import { cn } from '../../lib/utils'
 import { toast } from 'sonner'
@@ -40,7 +40,7 @@ const ACCENT_COLORS = [
   { label: 'Amber',   value: '#f59e0b' },
 ]
 
-export function PreferencesModal() {
+export function PreferencesModal({ onShowReview }: { onShowReview?: () => void } = {}) {
   const { isPrefsModalOpen, setPrefsModalOpen, currentUser, setActiveView } = useUIStore()
   const {
     isPremium, autoLaunch, showNotifications, focusMode, sidebarExpanded,
@@ -474,6 +474,23 @@ export function PreferencesModal() {
                           <ExternalLink className="h-3.5 w-3.5 text-muted-foreground group-hover:text-foreground transition-colors" />
                         </button>
                       ))}
+                      <button
+                        onClick={() => { close(); onShowReview?.() }}
+                        className="w-full flex items-center justify-between p-3.5 rounded-xl bg-card border border-border/40 hover:border-border text-sm font-medium text-foreground transition-colors group"
+                      >
+                        Rate Apps for X
+                        <span className="text-base leading-none">⭐</span>
+                      </button>
+                      <button
+                        onClick={() => window.electronAPI?.openExternal(APP_STORE_REVIEW_URL)}
+                        className="w-full flex items-center justify-between p-3.5 rounded-xl bg-card border border-border/40 hover:border-primary/50 text-sm font-medium text-foreground transition-colors group"
+                      >
+                        <span className="flex items-center gap-2">
+                          <MessageSquareText className="h-4 w-4 text-primary" />
+                          Write a Review
+                        </span>
+                        <span className="text-[11px] font-medium text-muted-foreground">Optional</span>
+                      </button>
                     </div>
 
                     <p className="text-[11px] text-muted-foreground text-center leading-relaxed">

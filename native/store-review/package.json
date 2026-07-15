@@ -1,0 +1,9 @@
+{
+  "name": "store-review",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Native SKStoreReviewController bridge for the in-app rating overlay (macOS only).",
+  "main": "index.js",
+  "gypfile": true,
+  "os": [ "darwin" ]
+}

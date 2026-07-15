@@ -36,6 +36,7 @@ import * as fs from 'fs';
   }
 })()
 import { AccountManager } from './accountManager';
+import { XLoginReviewDetector, isXAuthRoute } from './xLoginReviewDetector';
 import { MenuBuilder } from './menuBuilder';
 import { DockManager } from './dockManager';
 import { NotificationManager } from './notificationManager';
@@ -84,6 +85,7 @@ const unreadCounts: Record<string, number> = {};
 let isModalOpen = false;
 let activeBrowserAccountId: string | null = null;
 let browserViewGeneration = 0;
+let disposeLoginReviewCookieListener: (() => void) | null = null;
 
 // ── Security: restrict navigation in ALL web contents ─────────────────────────
 app.on('web-contents-created', (_event, contents) => {
@@ -104,6 +106,39 @@ app.on('web-contents-created', (_event, contents) => {
   });
 
   contents.setWindowOpenHandler(({ url }) => {
+    // OAuth/auth popups (Google, Apple, Twitter callbacks) must stay in-app.
+    // Opening them in the system browser breaks the login flow and triggers
+    // App Store guideline 4.1 (no redirecting users away for core functionality).
+    let isAuthPopup = false;
+    try {
+      const { hostname, protocol } = new URL(url);
+      const AUTH_POPUP_HOSTS = [
+        'accounts.google.com',
+        'appleid.apple.com',
+        'api.twitter.com',
+        'twitter.com',
+        'www.twitter.com',
+        'x.com',
+        'www.x.com',
+      ];
+      isAuthPopup = (protocol === 'https:') &&
+        AUTH_POPUP_HOSTS.some(h => hostname === h || hostname.endsWith(`.${h}`));
+    } catch { /* malformed URL — deny */ }
+
+    if (isAuthPopup) {
+      return {
+        action: 'allow',
+        overrideBrowserWindowOptions: {
+          width: 520,
+          height: 640,
+          webPreferences: { nodeIntegration: false, contextIsolation: true },
+          autoHideMenuBar: true,
+          title: 'Sign in',
+        },
+      };
+    }
+
+    // Non-auth external links → system browser
     shell.openExternal(url).catch(() => { });
     return { action: 'deny' };
   });
@@ -329,6 +364,50 @@ function createXView(account: WorkspaceAccount | Account): void {
   const acctSession = session.fromPartition(account.partition);
   acctSession.setUserAgent(USER_AGENT);
 
+  // ── X login detection for review trigger ─────────────────────────────────
+  if (disposeLoginReviewCookieListener) {
+    disposeLoginReviewCookieListener();
+    disposeLoginReviewCookieListener = null;
+  }
+  const loginReviewDetector = new XLoginReviewDetector();
+  const xSessionCookieNames = new Set(['auth_token', 'ct0', 'twid']);
+  const readHasXSessionCookie = async (): Promise<boolean> => {
+    const cookies = await acctSession.cookies.get({ url: 'https://x.com' });
+    return cookies.some(c => xSessionCookieNames.has(c.name) && Boolean(c.value));
+  };
+  const emitXLoginSuccess = (): void => {
+    console.log('[review] Confirmed successful interactive X login');
+    mainWindow?.webContents.send('review:x-login-success');
+  };
+  // Capture initial state before user can log in — prevents restored sessions firing the trigger
+  readHasXSessionCookie()
+    .then(has => loginReviewDetector.initializeSessionState(has))
+    .catch(() => {});
+  const inspectXSessionTransition = async (): Promise<void> => {
+    try {
+      const has = await readHasXSessionCookie();
+      if (loginReviewDetector.observeSessionState(has)) emitXLoginSuccess();
+    } catch {}
+  };
+  const detectSuccessfulXLogin = async (url: string): Promise<void> => {
+    if (isXAuthRoute(url)) { loginReviewDetector.observeNavigation(url, false); return; }
+    try {
+      const has = await readHasXSessionCookie();
+      if (loginReviewDetector.observeNavigation(url, has)) emitXLoginSuccess();
+    } catch {}
+  };
+  const onXCookieChanged = (_e: Electron.Event, cookie: Electron.Cookie): void => {
+    if (xSessionCookieNames.has(cookie.name)) void inspectXSessionTransition();
+  };
+  acctSession.cookies.on('changed', onXCookieChanged);
+  disposeLoginReviewCookieListener = () => acctSession.cookies.removeListener('changed', onXCookieChanged);
+
+  // Grant camera + microphone for voice/video demo mode
+  acctSession.setPermissionRequestHandler((_wc, permission, callback) => {
+    const allowed = ['camera', 'microphone', 'media', 'mediaKeySystem', 'fullscreen', 'notifications'];
+    callback(allowed.includes(permission));
+  });
+
   messengerView = new BrowserView({
     webPreferences: {
       preload: path.join(__dirname, 'messengerPreload.js'),
@@ -359,14 +438,17 @@ function createXView(account: WorkspaceAccount | Account): void {
     messengerView.webContents.on('did-finish-load', () => {
       sendBrowserState();
       scheduleXProfileRefresh(account, 1800);
+      void detectSuccessfulXLogin(messengerView?.webContents.getURL() || '');
     });
-    messengerView.webContents.on('did-navigate', () => {
+    messengerView.webContents.on('did-navigate', (_event, url) => {
       sendBrowserState();
       scheduleXProfileRefresh(account, 1800);
+      void detectSuccessfulXLogin(url);
     });
-    messengerView.webContents.on('did-navigate-in-page', () => {
+    messengerView.webContents.on('did-navigate-in-page', (_event, url) => {
       sendBrowserState();
       scheduleXProfileRefresh(account, 1800);
+      void detectSuccessfulXLogin(url);
     });
   }
 
@@ -1232,6 +1314,15 @@ No markdown, no extra text.`,
     } catch (err) {
       console.error('Failed to load X:', err);
       return { success: false, error: 'Failed to load X' };
+    }
+  });
+
+  ipcMain.handle('review:requestNative', () => {
+    try {
+      const storeReview = require('store-review');
+      return storeReview.requestReview();
+    } catch {
+      return false;
     }
   });
 

@@ -9,7 +9,11 @@ directories:
 files:
   - dist/**/*
   - dist-electron/**/*
+  - node_modules/store-review/**/*
   - "!**/*.map"
+
+asarUnpack:
+  - node_modules/store-review/build/Release/*.node
 
 extraResources:
   - from: assets/

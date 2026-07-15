@@ -1,7 +1,7 @@
 {
   "name": "apps-for-x",
   "productName": "Apps for X",
-  "version": "1.6.0",
+  "version": "1.7.0",
   "description": "Apps for X – Multi-account X (Twitter) desktop client with productivity tools",
   "main": "dist-electron/main.js",
   "author": "Apps for X",
@@ -15,7 +15,8 @@
     "build:pkg": "rm -rf release/mas-universal && rm -f release/*.pkg && CSC_INSTALLER_LINK=\"./developers-installer.p12\" CSC_INSTALLER_KEY_PASSWORD=\"Mondialu13\" npm run build && (electron-builder --mac mas --universal --config.mas.type=distribution || true) && codesign --force --sign \"Apple Distribution: Mihai Graure (L284ZYR49L)\" --entitlements \"build/entitlements.mas.loginhelper.plist\" \"release/mas-universal/Apps for X.app/Contents/Library/LoginItems/Apps for X Login Helper.app/Contents/MacOS/Apps for X Login Helper\" && productbuild --component \"release/mas-universal/Apps for X.app\" /Applications --sign \"3rd Party Mac Developer Installer: Mihai Graure (L284ZYR49L)\" \"release/Apps for X.pkg\"",
     "build:all": "npm run build && electron-builder --mac dmg mas",
     "preview": "vite preview",
-    "postinstall": "electron-builder install-app-deps"
+    "postinstall": "electron-builder install-app-deps",
+    "rebuild:native": "electron-rebuild -f -w store-review"
   },
   "devDependencies": {
     "@electron/notarize": "^2.3.2",
@@ -52,6 +53,7 @@
     "sonner": "^2.0.7",
     "tailwind-merge": "^3.6.0",
     "uuid": "^9.0.1",
-    "zustand": "^5.0.13"
+    "zustand": "^5.0.13",
+    "store-review": "file:./native/store-review"
   }
 }

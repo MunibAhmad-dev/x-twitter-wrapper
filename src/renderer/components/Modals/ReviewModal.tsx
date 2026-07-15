@@ -1,124 +1,226 @@
+import { useState, useEffect } from 'react'
+import { APP_NAME, APP_VERSION } from '../../../shared/constants'
 import { useUIStore } from '../../store/uiStore'
-import { APP_STORE_REVIEW_URL } from '../../../shared/constants'
-import { Dialog, DialogContent } from '../ui/dialog'
+import {
+  dismissReview,
+  requestNativeReview,
+  REVIEW_LEFT_KEY,
+  REVIEW_DISMISS_KEY,
+} from '../../lib/reviewPrompt'
+import logoUrl from '../../assets/logo.jpeg'
+
+const SNOOZE_MS          = 7  * 24 * 60 * 60 * 1000
+const LOW_STAR_SNOOZE_MS = 30 * 24 * 60 * 60 * 1000
+
+function useIsDark() {
+  const [dark, setDark] = useState(() => document.documentElement.classList.contains('dark'))
+  useEffect(() => {
+    const obs = new MutationObserver(() =>
+      setDark(document.documentElement.classList.contains('dark'))
+    )
+    obs.observe(document.documentElement, { attributeFilter: ['class'] })
+    return () => obs.disconnect()
+  }, [])
+  return dark
+}
 
 export function ReviewModal() {
   const { isReviewModalOpen, setReviewModalOpen } = useUIStore()
+  const dark = useIsDark()
+  const [hovered, setHovered] = useState(-1)
+  const [rating, setRating]   = useState(-1)
+  const [step, setStep]       = useState<'rate' | 'thanks'>('rate')
 
-  function dismiss() {
+  useEffect(() => {
+    window.electronAPI?.setModalOpen(isReviewModalOpen)
+    if (!isReviewModalOpen) { setHovered(-1); setRating(-1); setStep('rate') }
+    return () => { if (isReviewModalOpen) window.electronAPI?.setModalOpen(false) }
+  }, [isReviewModalOpen])
+
+  const close = () => {
+    window.electronAPI?.setModalOpen(false)
     setReviewModalOpen(false)
   }
 
-  function openReview() {
-    window.electronAPI?.openExternal(APP_STORE_REVIEW_URL)
-    localStorage.setItem('reviewRated', '1')
-    dismiss()
+  const handleStar = (idx: number) => {
+    setRating(idx)
+    if (idx + 1 >= 4) {
+      setStep('thanks')
+    } else {
+      localStorage.setItem(REVIEW_DISMISS_KEY, String(Date.now() + LOW_STAR_SNOOZE_MS - SNOOZE_MS))
+      dismissReview(APP_VERSION)
+      close()
+    }
   }
 
-  function dislike() {
-    localStorage.setItem('reviewRated', '1')
-    dismiss()
+  const handleWriteReview = async () => {
+    localStorage.setItem(REVIEW_LEFT_KEY, '1')
+    await requestNativeReview(APP_VERSION)
+    close()
   }
+
+  const handleOK = () => {
+    localStorage.setItem(REVIEW_LEFT_KEY, '1')
+    dismissReview(APP_VERSION)
+    close()
+  }
+
+  const handleNotNow = () => {
+    dismissReview(APP_VERSION)
+    close()
+  }
+
+  if (!isReviewModalOpen) return null
+
+  const t = {
+    card:     dark ? '#1e1e1e' : '#ffffff',
+    border:   dark ? 'rgba(255,255,255,0.07)' : 'rgba(0,0,0,0.07)',
+    title:    dark ? '#f2f2f2' : '#111111',
+    body:     dark ? '#888888' : '#777777',
+    divider:  dark ? 'rgba(255,255,255,0.07)' : 'rgba(0,0,0,0.07)',
+    btnHover: dark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.04)',
+    starIdle: dark ? '#444444' : '#d1d1d6',
+    starOn:   '#FE2C55',
+    starDone: '#FF3B30',
+  }
+
+  const shadow = dark
+    ? '0 16px 48px rgba(0,0,0,0.60), 0 2px 8px rgba(0,0,0,0.30)'
+    : '0 4px 6px rgba(0,0,0,0.04), 0 12px 36px rgba(0,0,0,0.10)'
 
   return (
-    <Dialog open={isReviewModalOpen} onOpenChange={(o) => !o && dismiss()}>
-      <DialogContent
-        className="max-w-sm select-none border-0 p-0 overflow-hidden"
-        style={{ background: '#1c1c1e', borderRadius: 20 }}
-        onPointerDownOutside={dismiss}
-      >
-        <div className="flex flex-col items-center gap-5 px-6 pt-8 pb-6">
+    <div style={{
+      position: 'fixed', inset: 0, zIndex: 9999, pointerEvents: 'none',
+      display: 'flex', justifyContent: 'center', alignItems: 'flex-start', paddingTop: 52,
+    }}>
+      <div style={{
+        pointerEvents: 'auto', width: 296, background: t.card,
+        border: `1px solid ${t.border}`, borderRadius: 18, boxShadow: shadow, overflow: 'hidden',
+      }}>
 
-          {/* Icon */}
-          <div style={{
-            width: 80, height: 80, borderRadius: '50%',
-            background: '#2c2c2e',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            fontSize: 40,
-          }}>
-            🎉
-          </div>
+        {step === 'rate' && (
+          <>
+            <div style={{ padding: '22px 20px 16px' }}>
+              <img
+                src={logoUrl}
+                alt={APP_NAME}
+                style={{ width: 56, height: 56, borderRadius: 13, display: 'block', marginBottom: 14, objectFit: 'cover' }}
+              />
+              <p style={{ margin: '0 0 4px', fontSize: 14, fontWeight: 600, color: t.title, lineHeight: 1.35 }}>
+                Enjoying {APP_NAME}?
+              </p>
+              <p style={{ margin: 0, fontSize: 12.5, color: t.body, lineHeight: 1.5 }}>
+                Click a star to rate it on the App Store.
+              </p>
+            </div>
 
-          {/* Text */}
-          <div className="text-center">
-            <h2 style={{ color: '#ffffff', fontSize: 22, fontWeight: 700, marginBottom: 6 }}>
-              Thank you!
-            </h2>
-            <p style={{ color: 'rgba(255,255,255,0.55)', fontSize: 14, marginBottom: 12 }}>
-              Your subscription is now active.
-            </p>
-            <p style={{ color: 'rgba(255,255,255,0.75)', fontSize: 14, lineHeight: 1.5 }}>
-              We'd love to hear your feedback.<br />How do you feel about our app?
-            </p>
-          </div>
+            <div style={{ height: 1, background: t.divider }} />
 
-          {/* Three cards */}
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 10, width: '100%' }}>
-            {/* I love it */}
-            <button
-              onClick={openReview}
-              style={{
-                background: '#2c2c2e', border: '1px solid rgba(255,255,255,0.1)',
-                borderRadius: 14, padding: '16px 8px', cursor: 'pointer',
-                display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8,
-                transition: 'background 0.15s',
-              }}
-              onMouseEnter={e => (e.currentTarget.style.background = '#3a3a3c')}
-              onMouseLeave={e => (e.currentTarget.style.background = '#2c2c2e')}
+            <div
+              style={{ display: 'flex', justifyContent: 'center', gap: 8, padding: '16px 20px' }}
+              onMouseLeave={() => setHovered(-1)}
             >
-              <span style={{ fontSize: 32 }}>❤️</span>
-              <div style={{ textAlign: 'center' }}>
-                <div style={{ color: '#fff', fontSize: 13, fontWeight: 700 }}>I love it</div>
-                <div style={{ color: 'rgba(255,255,255,0.45)', fontSize: 11, marginTop: 2 }}>Leave a review</div>
-              </div>
+              {[0, 1, 2, 3, 4].map(i => {
+                const on = i <= hovered
+                return (
+                  <button
+                    key={i}
+                    onMouseEnter={() => setHovered(i)}
+                    onClick={() => handleStar(i)}
+                    style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 2, display: 'flex' }}
+                  >
+                    <svg
+                      width={36} height={36} viewBox="0 0 24 24"
+                      style={{
+                        display: 'block',
+                        transition: 'fill 0.08s, transform 0.08s',
+                        transform: on ? 'scale(1.08)' : 'scale(1)',
+                      }}
+                      fill={on ? t.starOn : 'none'}
+                      stroke={on ? t.starOn : t.starIdle}
+                      strokeWidth={on ? 0 : 1.8}
+                      strokeLinejoin="round"
+                    >
+                      <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+                    </svg>
+                  </button>
+                )
+              })}
+            </div>
+
+            <div style={{ height: 1, background: t.divider }} />
+
+            <button
+              onClick={handleNotNow}
+              style={{
+                display: 'block', width: '100%', padding: '13px 0', background: 'none',
+                border: 'none', cursor: 'pointer', fontSize: 13, fontWeight: 500, color: t.body,
+              }}
+              onMouseEnter={e => (e.currentTarget.style.background = t.btnHover)}
+              onMouseLeave={e => (e.currentTarget.style.background = 'none')}
+            >
+              Not Now
+            </button>
+          </>
+        )}
+
+        {step === 'thanks' && (
+          <>
+            <div style={{ padding: '22px 20px 16px' }}>
+              <img
+                src={logoUrl}
+                alt={APP_NAME}
+                style={{ width: 56, height: 56, borderRadius: 13, display: 'block', marginBottom: 14, objectFit: 'cover' }}
+              />
+              <p style={{ margin: '0 0 4px', fontSize: 14, fontWeight: 600, color: t.title, lineHeight: 1.35 }}>
+                Thanks for your feedback.
+              </p>
+              <p style={{ margin: 0, fontSize: 12.5, color: t.body, lineHeight: 1.5 }}>
+                You can also write a review.
+              </p>
+            </div>
+
+            <div style={{ height: 1, background: t.divider }} />
+
+            <div style={{ display: 'flex', justifyContent: 'center', gap: 8, padding: '16px 20px' }}>
+              {[0, 1, 2, 3, 4].map(i => (
+                <svg key={i} width={34} height={34} viewBox="0 0 24 24" style={{ display: 'block' }}
+                  fill={i <= rating ? t.starDone : t.starIdle} stroke="none">
+                  <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+                </svg>
+              ))}
+            </div>
+
+            <div style={{ height: 1, background: t.divider }} />
+
+            <button
+              onClick={handleWriteReview}
+              style={{
+                display: 'block', width: '100%', padding: '13px 0', background: 'none',
+                border: 'none', borderBottom: `1px solid ${t.divider}`, cursor: 'pointer',
+                fontSize: 13, fontWeight: 600, color: t.starOn,
+              }}
+              onMouseEnter={e => (e.currentTarget.style.background = t.btnHover)}
+              onMouseLeave={e => (e.currentTarget.style.background = 'none')}
+            >
+              Write a Review
             </button>
 
-            {/* I don't like it */}
             <button
-              onClick={dislike}
+              onClick={handleOK}
               style={{
-                background: '#2c2c2e', border: '1px solid rgba(255,255,255,0.1)',
-                borderRadius: 14, padding: '16px 8px', cursor: 'pointer',
-                display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8,
-                transition: 'background 0.15s',
+                display: 'block', width: '100%', padding: '13px 0', background: 'none',
+                border: 'none', cursor: 'pointer', fontSize: 13, fontWeight: 500, color: t.body,
               }}
-              onMouseEnter={e => (e.currentTarget.style.background = '#3a3a3c')}
-              onMouseLeave={e => (e.currentTarget.style.background = '#2c2c2e')}
+              onMouseEnter={e => (e.currentTarget.style.background = t.btnHover)}
+              onMouseLeave={e => (e.currentTarget.style.background = 'none')}
             >
-              <span style={{ fontSize: 32 }}>💔</span>
-              <div style={{ textAlign: 'center' }}>
-                <div style={{ color: '#fff', fontSize: 13, fontWeight: 700 }}>I don't like it</div>
-                <div style={{ color: 'rgba(255,255,255,0.45)', fontSize: 11, marginTop: 2 }}>Let us know</div>
-              </div>
+              OK
             </button>
+          </>
+        )}
 
-            {/* Maybe later */}
-            <button
-              onClick={dismiss}
-              style={{
-                background: '#2c2c2e', border: '1px solid rgba(255,255,255,0.1)',
-                borderRadius: 14, padding: '16px 8px', cursor: 'pointer',
-                display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8,
-                transition: 'background 0.15s',
-              }}
-              onMouseEnter={e => (e.currentTarget.style.background = '#3a3a3c')}
-              onMouseLeave={e => (e.currentTarget.style.background = '#2c2c2e')}
-            >
-              <span style={{ fontSize: 32 }}>🕐</span>
-              <div style={{ textAlign: 'center' }}>
-                <div style={{ color: '#fff', fontSize: 13, fontWeight: 700 }}>Maybe later</div>
-                <div style={{ color: 'rgba(255,255,255,0.45)', fontSize: 11, marginTop: 2 }}>Remind me later</div>
-              </div>
-            </button>
-          </div>
-
-          {/* Footer */}
-          <p style={{ color: 'rgba(255,255,255,0.35)', fontSize: 12, display: 'flex', alignItems: 'center', gap: 4 }}>
-            🔒 It only takes a few seconds. Thanks!
-          </p>
-
-        </div>
-      </DialogContent>
-    </Dialog>
+      </div>
+    </div>
   )
 }

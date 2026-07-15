@@ -245,6 +245,15 @@ contextBridge.exposeInMainWorld('electronAPI', {
 
   openExternal: (url: string) => ipcRenderer.send('shell:openExternal', url),
 
+  requestNativeReview: (): Promise<boolean> =>
+    ipcRenderer.invoke('review:requestNative'),
+
+  onXLoginSuccess: (cb: () => void) => {
+    const handler = () => cb();
+    ipcRenderer.on('review:x-login-success', handler);
+    return () => ipcRenderer.removeListener('review:x-login-success', handler);
+  },
+
   // ── Menu events (from native menu bar) ───────────────────────────────────
   onMenuEvent: (
     event:

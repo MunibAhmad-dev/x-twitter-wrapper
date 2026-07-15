@@ -2,7 +2,7 @@ export const APP_NAME = "Apps for X";
 // Flip to true once IAP products are approved in App Store Connect.
 export const IAP_ENABLED = false;
 // Numeric App Store ID — fill this in after your app is published (e.g. "id6741234567")
-export const APP_STORE_REVIEW_URL = "https://apps.apple.com/app/id_PLACEHOLDER?action=write-review";
+export const APP_STORE_REVIEW_URL = "https://apps.apple.com/app/6786838258?action=write-review";
 export const APP_VERSION = "1.6.0";
 export const MESSENGER_URL = "https://x.com";
 export const MESSENGER_CHAT_URL = "https://x.com/messages";
@@ -53,7 +53,9 @@ export const ALLOWED_HOSTS = [
   "abs.twimg.com",
   "pbs.twimg.com",
   "video.twimg.com",
-  "accounts.google.com", // Google login via X
+  "accounts.google.com", // Google OAuth popup
+  "appleid.apple.com",   // Apple Sign In popup
+  "api.twitter.com",     // Twitter OAuth callbacks
   "apple.com",
   "localhost",
   "127.0.0.1",

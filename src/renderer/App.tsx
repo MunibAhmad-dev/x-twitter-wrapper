@@ -23,7 +23,15 @@ import { useSettingsStore } from './store/settingsStore'
 import { useUIStore } from './store/uiStore'
 import { useWorkspaceStore } from './store/workspaceStore'
 import { useNotificationStore } from './store/notificationStore'
-import { IAP_ENABLED } from '../shared/constants'
+import { IAP_ENABLED, APP_VERSION } from '../shared/constants'
+import {
+  migrateReviewPromptState,
+  recordReviewLaunch,
+  isThirdReviewLaunch,
+  shouldShowReview,
+  resetReviewPrompt,
+  REVIEW_SESSION_KEY,
+} from './lib/reviewPrompt'
 
 export function App() {
   const { theme, isPremium, updateSettings, setSettings } = useSettingsStore()
@@ -208,15 +216,28 @@ export function App() {
     init()
   }, [])
 
-  // ── Review prompt: show on 3rd app launch, once only ────────────────────
+  // ── Review: 3rd launch (5 s) or 20 min into any session ─────────────────
   useEffect(() => {
-    if (localStorage.getItem('reviewRated') || localStorage.getItem('reviewPromptShown')) return
-    const launches = parseInt(localStorage.getItem('appLaunchCount') || '0', 10) + 1
-    localStorage.setItem('appLaunchCount', String(launches))
-    if (launches >= 3) {
-      localStorage.setItem('reviewPromptShown', '1')
-      setReviewModalOpen(true)
-    }
+    const timers: ReturnType<typeof setTimeout>[] = []
+    migrateReviewPromptState()
+    const trigger = () => { if (shouldShowReview(APP_VERSION)) setReviewModalOpen(true) }
+    const count = recordReviewLaunch()
+    if (isThirdReviewLaunch(count)) timers.push(setTimeout(trigger, 5_000))
+    localStorage.setItem(REVIEW_SESSION_KEY, String(Date.now()))
+    timers.push(setTimeout(trigger, 20 * 60 * 1000))
+    return () => timers.forEach(clearTimeout)
+  }, [])
+
+  // ── Review: 4 s after a confirmed interactive X login ────────────────────
+  useEffect(() => {
+    let timer: ReturnType<typeof setTimeout> | undefined
+    const unsubscribe = window.electronAPI?.onXLoginSuccess?.(() => {
+      if (timer) clearTimeout(timer)
+      timer = setTimeout(() => {
+        if (shouldShowReview(APP_VERSION)) setReviewModalOpen(true)
+      }, 4_000)
+    })
+    return () => { if (timer) clearTimeout(timer); unsubscribe?.() }
   }, [])
 
   // ── ⌘K global shortcut ──────────────────────────────────────────────────
@@ -231,6 +252,12 @@ export function App() {
         e.preventDefault()
         window.electronAPI?.settings.update({ hasSeenOnboarding: false, isPremium: false })
           .then(() => setShowOnboarding(true))
+      }
+      // Dev-only: ⌘⇧R → reset review state and open custom modal
+      if ((e.metaKey || e.ctrlKey) && e.shiftKey && e.key === 'R') {
+        e.preventDefault()
+        resetReviewPrompt()
+        setReviewModalOpen(true)
       }
     }
     window.addEventListener('keydown', handler)
@@ -254,12 +281,12 @@ export function App() {
       <WorkspaceView />
 
       {/* ── Modals ─────────────────────────────────────────────────────── */}
-      <PreferencesModal />
+      <PreferencesModal onShowReview={() => { resetReviewPrompt(); setReviewModalOpen(true) }} />
+      <ReviewModal />
       <DisclaimerModal />
       <CreateWorkspaceModal />
       <FeedbackModal open={isFeedbackModalOpen} onClose={() => setFeedbackModalOpen(false)} />
       <CommandPalette />
-      <ReviewModal />
       <SplashScreen />
       <Toaster position="bottom-right" richColors />
     </div>
