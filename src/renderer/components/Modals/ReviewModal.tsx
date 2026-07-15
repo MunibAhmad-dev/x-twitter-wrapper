@@ -1,11 +1,11 @@
 import { useState, useEffect } from 'react'
-import { APP_NAME, APP_VERSION } from '../../../shared/constants'
+import { APP_NAME, APP_VERSION, APP_STORE_REVIEW_URL } from '../../../shared/constants'
 import { useUIStore } from '../../store/uiStore'
 import {
   dismissReview,
-  requestNativeReview,
   REVIEW_LEFT_KEY,
   REVIEW_DISMISS_KEY,
+  REVIEW_VERSION_KEY,
 } from '../../lib/reviewPrompt'
 import logoUrl from '../../assets/logo.jpeg'
 
@@ -55,7 +55,13 @@ export function ReviewModal() {
 
   const handleWriteReview = async () => {
     localStorage.setItem(REVIEW_LEFT_KEY, '1')
-    await requestNativeReview(APP_VERSION)
+    localStorage.setItem(REVIEW_VERSION_KEY, APP_VERSION)
+    try {
+      const native = await (window.electronAPI as any)?.requestNativeReview?.()
+      if (!native) window.electronAPI?.openExternal(APP_STORE_REVIEW_URL)
+    } catch {
+      window.electronAPI?.openExternal(APP_STORE_REVIEW_URL)
+    }
     close()
   }
 

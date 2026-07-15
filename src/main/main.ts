@@ -1318,10 +1318,14 @@ No markdown, no extra text.`,
   });
 
   ipcMain.handle('review:requestNative', () => {
+    if (process.platform !== 'darwin') return false;
     try {
       const storeReview = require('store-review');
-      return storeReview.requestReview();
-    } catch {
+      const invoked = storeReview.requestReview() === true;
+      console.log(`[review] SKStoreReviewController invoked=${invoked}`);
+      return invoked;
+    } catch (err) {
+      console.warn('[review] store-review addon unavailable:', err);
       return false;
     }
   });
