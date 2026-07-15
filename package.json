@@ -1,7 +1,7 @@
 {
   "name": "apps-for-x",
   "productName": "Apps for X",
-  "version": "1.7.0",
+  "version": "1.8.0",
   "description": "Apps for X – Multi-account X (Twitter) desktop client with productivity tools",
   "main": "dist-electron/main.js",
   "author": "Apps for X",
@@ -20,6 +20,7 @@
   },
   "devDependencies": {
     "@electron/notarize": "^2.3.2",
+    "electron-rebuild": "^3.2.9",
     "@tailwindcss/postcss": "^4.3.0",
     "@types/node": "^20.12.7",
     "@types/react": "^19.2.14",
