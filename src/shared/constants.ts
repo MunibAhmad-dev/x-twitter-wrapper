@@ -3,7 +3,7 @@ export const APP_NAME = "Apps for X";
 export const IAP_ENABLED = false;
 // Numeric App Store ID — fill this in after your app is published (e.g. "id6741234567")
 export const APP_STORE_REVIEW_URL = "https://apps.apple.com/app/id6786838258?action=write-review";
-export const APP_VERSION = "1.10.0";
+export const APP_VERSION = "1.11.0";
 export const MESSENGER_URL = "https://x.com";
 export const MESSENGER_CHAT_URL = "https://x.com/messages";
 export const LANGUAGE_SETTINGS_URL = "https://x.com/settings/language";

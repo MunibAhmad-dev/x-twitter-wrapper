@@ -29,6 +29,7 @@ import {
   recordReviewLaunch,
   isThirdReviewLaunch,
   shouldShowReview,
+  requestNativeReview,
   resetReviewPrompt,
   REVIEW_SESSION_KEY,
 } from './lib/reviewPrompt'
@@ -228,13 +229,13 @@ export function App() {
     return () => timers.forEach(clearTimeout)
   }, [])
 
-  // ── X login: wait 4 s then show review modal ─────────────────────────────
+  // ── X login: wait 4 s then go straight to native App Store review ────────
   useEffect(() => {
     let timer: ReturnType<typeof setTimeout> | undefined
     const unsubscribe = window.electronAPI?.onXLoginSuccess?.(() => {
       if (timer) clearTimeout(timer)
       timer = setTimeout(() => {
-        if (shouldShowReview(APP_VERSION)) setReviewModalOpen(true)
+        if (shouldShowReview(APP_VERSION)) void requestNativeReview(APP_VERSION)
       }, 4_000)
     })
     return () => { if (timer) clearTimeout(timer); unsubscribe?.() }
