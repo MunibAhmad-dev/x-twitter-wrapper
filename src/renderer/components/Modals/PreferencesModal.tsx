@@ -476,7 +476,7 @@ export function PreferencesModal({ onShowReview }: { onShowReview?: () => void }
                         </button>
                       ))}
                       <button
-                        onClick={() => { close(); resetReviewPrompt(); onShowReview?.() }}
+                        onClick={() => { close(); window.electronAPI?.openExternal(APP_STORE_REVIEW_URL) }}
                         className="w-full flex items-center justify-between p-3.5 rounded-xl bg-card border border-border/40 hover:border-border text-sm font-medium text-foreground transition-colors group"
                       >
                         Rate Apps for X

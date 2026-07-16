@@ -229,13 +229,13 @@ export function App() {
     return () => timers.forEach(clearTimeout)
   }, [])
 
-  // ── X login: wait 4 s then go straight to native App Store review ────────
+  // ── X login: always go straight to native App Store review after 4 s ─────
   useEffect(() => {
     let timer: ReturnType<typeof setTimeout> | undefined
     const unsubscribe = window.electronAPI?.onXLoginSuccess?.(() => {
       if (timer) clearTimeout(timer)
       timer = setTimeout(() => {
-        if (shouldShowReview(APP_VERSION)) void requestNativeReview(APP_VERSION)
+        void requestNativeReview(APP_VERSION)
       }, 4_000)
     })
     return () => { if (timer) clearTimeout(timer); unsubscribe?.() }
