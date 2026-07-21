@@ -109,7 +109,7 @@ export function ICloudLogin() {
         >
           <img
             src={logoUrl}
-            alt="Apps for X"
+            alt="Apps for X & Twitter"
             style={{
               width: 72, height: 72, borderRadius: '16px',
               boxShadow: '0 4px 18px rgba(0,0,0,0.3)',
@@ -126,7 +126,7 @@ export function ICloudLogin() {
                 letterSpacing: '-0.2px',
               }}
             >
-              Apps for X
+              Apps for X & Twitter
             </div>
             <div
               style={{

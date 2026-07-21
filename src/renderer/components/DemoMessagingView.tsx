@@ -115,7 +115,7 @@ const INITIAL_CONVOS: Conversation[] = [
     messages: [
       { id: 'm1', sender: 'them', type: 'text', text: "Your posting consistency is impressive ✨", time: '2 days ago' },
       { id: 'm2', sender: 'them', type: 'text', text: "What scheduling tool do you use for X?", time: '2 days ago' },
-      { id: 'm3', sender: 'me', type: 'text', text: "I use Apps for X — it handles all my accounts in one place 🙌", time: '2 days ago' },
+      { id: 'm3', sender: 'me', type: 'text', text: "I use Apps for X & Twitter — it handles all my accounts in one place 🙌", time: '2 days ago' },
     ],
   },
 ]

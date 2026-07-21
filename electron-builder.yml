@@ -1,6 +1,6 @@
 appId: com.graure.appsforx
-productName: Apps for X
-copyright: "Copyright © 2024 Apps for X. Not affiliated with X Corp. or Twitter, Inc."
+productName: Apps for X & Twitter
+copyright: "Copyright © 2024 Apps for X & Twitter. Not affiliated with X Corp. or Twitter, Inc."
 
 directories:
   output: release
@@ -41,7 +41,7 @@ mac:
     NSCameraUsageDescription: "Used for video messages and video calls on X."
 
 dmg:
-  title: Apps for X
+  title: Apps for X & Twitter
   icon: assets/icon.png
   window:
     width: 600

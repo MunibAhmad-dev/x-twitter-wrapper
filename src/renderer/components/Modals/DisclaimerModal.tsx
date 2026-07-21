@@ -30,7 +30,7 @@ export function DisclaimerModal() {
 
         <div className="py-4 space-y-3">
           <p className="text-sm text-muted-foreground leading-relaxed">
-            <strong>Apps for X</strong> is an independent, third-party
+            <strong>Apps for X & Twitter</strong> is an independent, third-party
             application and is{' '}
             <strong>not affiliated with, endorsed by, sponsored by, or connected to X Corp.</strong>{' '}
             X is a service owned and operated by X Corp. This app

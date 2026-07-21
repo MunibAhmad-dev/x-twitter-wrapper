@@ -1,10 +1,10 @@
 {
   "name": "apps-for-x",
-  "productName": "Apps for X",
-  "version": "1.13.0",
-  "description": "Apps for X – Multi-account X (Twitter) desktop client with productivity tools",
+  "productName": "Apps for X & Twitter",
+  "version": "1.14.0",
+  "description": "Apps for X & Twitter – Multi-account X (Twitter) desktop client with productivity tools",
   "main": "dist-electron/main.js",
-  "author": "Apps for X",
+  "author": "Apps for X & Twitter",
   "license": "MIT",
   "scripts": {
     "dev": "vite",
@@ -12,7 +12,7 @@
     "build:dmg": "npm run build && electron-builder --mac dmg",
     "build:mas": "npm run build && electron-builder --mac mas",
     "build:mas-dev": "npm run build && electron-builder --mac mas-dev",
-    "build:pkg": "rm -rf release/mas-universal && rm -f release/*.pkg && CSC_INSTALLER_LINK=\"./developers-installer.p12\" CSC_INSTALLER_KEY_PASSWORD=\"Mondialu13\" npm run build && (electron-builder --mac mas --universal --config.mas.type=distribution || true) && codesign --force --sign \"Apple Distribution: Mihai Graure (L284ZYR49L)\" --entitlements \"build/entitlements.mas.loginhelper.plist\" \"release/mas-universal/Apps for X.app/Contents/Library/LoginItems/Apps for X Login Helper.app/Contents/MacOS/Apps for X Login Helper\" && productbuild --component \"release/mas-universal/Apps for X.app\" /Applications --sign \"3rd Party Mac Developer Installer: Mihai Graure (L284ZYR49L)\" \"release/Apps for X.pkg\"",
+    "build:pkg": "rm -rf release/mas-universal && rm -f release/*.pkg && CSC_INSTALLER_LINK=\"./developers-installer.p12\" CSC_INSTALLER_KEY_PASSWORD=\"Mondialu13\" npm run build && (electron-builder --mac mas --universal --config.mas.type=distribution || true) && codesign --force --sign \"Apple Distribution: Mihai Graure (L284ZYR49L)\" --entitlements \"build/entitlements.mas.loginhelper.plist\" \"release/mas-universal/Apps for X & Twitter.app/Contents/Library/LoginItems/Apps for X & Twitter Login Helper.app/Contents/MacOS/Apps for X & Twitter Login Helper\" && productbuild --component \"release/mas-universal/Apps for X & Twitter.app\" /Applications --sign \"3rd Party Mac Developer Installer: Mihai Graure (L284ZYR49L)\" \"release/Apps for X & Twitter.pkg\"",
     "build:all": "npm run build && electron-builder --mac dmg mas",
     "preview": "vite preview",
     "postinstall": "electron-builder install-app-deps",

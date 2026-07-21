@@ -70,7 +70,7 @@ export function SplashScreen({ forceVisible }: { forceVisible?: boolean } = {}) 
         />
         <img
           src={logoUrl}
-          alt="Apps for X"
+          alt="Apps for X & Twitter"
           style={{
             width: 96, height: 96, borderRadius: '22px',
             boxShadow: '0 8px 32px rgba(0,0,0,0.35)',
@@ -103,7 +103,7 @@ export function SplashScreen({ forceVisible }: { forceVisible?: boolean } = {}) 
             textShadow: '0 1px 8px rgba(0,0,0,0.25)',
           }}
         >
-          Apps for X
+          Apps for X & Twitter
         </h1>
         <p
           style={{

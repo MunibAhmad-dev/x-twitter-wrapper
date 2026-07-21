@@ -133,8 +133,8 @@ export function Sidebar({ }: SidebarProps) {
       <div className={cn('flex items-center border-b border-border/30 px-3 py-3 bg-background/60 backdrop-blur-xl', isMac && 'pt-10', isExpanded ? 'justify-between' : 'justify-center')}>
         {isExpanded && (
           <div className="flex items-center gap-2 min-w-0 flex-1 overflow-hidden">
-            <img src={logoUrl} alt="Apps for X" className="w-7 h-7 rounded-xl shrink-0 shadow-sm object-cover" />
-            <span className="text-[13px] font-semibold text-foreground truncate leading-tight">Apps for X</span>
+            <img src={logoUrl} alt="Apps for X & Twitter" className="w-7 h-7 rounded-xl shrink-0 shadow-sm object-cover" />
+            <span className="text-[13px] font-semibold text-foreground truncate leading-tight">Apps for X & Twitter</span>
           </div>
         )}
         <button
