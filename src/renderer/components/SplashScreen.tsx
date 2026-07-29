@@ -1,4 +1,4 @@
-import logoUrl from '../assets/logo.jpeg'
+import logoUrl from '../assets/final.jpeg'
 import { useEffect, useState } from 'react'
 import { useUIStore } from '../store/uiStore'
 export function SplashScreen({ forceVisible }: { forceVisible?: boolean } = {}) {
@@ -70,7 +70,7 @@ export function SplashScreen({ forceVisible }: { forceVisible?: boolean } = {}) 
         />
         <img
           src={logoUrl}
-          alt="Apps for X & Twitter"
+          alt="Apps for Twitter Social X"
           style={{
             width: 96, height: 96, borderRadius: '22px',
             boxShadow: '0 8px 32px rgba(0,0,0,0.35)',
@@ -103,7 +103,7 @@ export function SplashScreen({ forceVisible }: { forceVisible?: boolean } = {}) 
             textShadow: '0 1px 8px rgba(0,0,0,0.25)',
           }}
         >
-          Apps for X & Twitter
+          Apps for Twitter Social X
         </h1>
         <p
           style={{

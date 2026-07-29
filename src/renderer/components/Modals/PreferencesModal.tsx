@@ -1,4 +1,4 @@
-import logoUrl from '../../assets/logo.jpeg'
+import logoUrl from '../../assets/final.jpeg'
 import { useEffect, useMemo, useState } from 'react'
 import { useUIStore } from '../../store/uiStore'
 import { useSettingsStore } from '../../store/settingsStore'
@@ -152,7 +152,7 @@ export function PreferencesModal({ onShowReview }: { onShowReview?: () => void }
                 </Avatar>
                 <div className="min-w-0">
                   <p className="text-xs font-semibold text-foreground truncate">{displayUsername}</p>
-                  <p className="text-[10px] text-muted-foreground">Apps for X & Twitter</p>
+                  <p className="text-[10px] text-muted-foreground">Apps for Twitter Social X</p>
                 </div>
               </div>
 
@@ -447,9 +447,9 @@ export function PreferencesModal({ onShowReview }: { onShowReview?: () => void }
                 {activeTab === 'about' && (
                   <div className="space-y-5">
                     <div className="flex items-center gap-4 p-4 rounded-2xl bg-muted/30 border border-border/40">
-                      <img src={logoUrl} alt="Apps for X & Twitter" className="w-14 h-14 rounded-2xl shadow-md shrink-0 object-cover" />
+                      <img src={logoUrl} alt="Apps for Twitter Social X" className="w-14 h-14 rounded-2xl shadow-md shrink-0 object-cover" />
                       <div>
-                        <p className="text-base font-bold text-foreground">Apps for X & Twitter</p>
+                        <p className="text-base font-bold text-foreground">Apps for Twitter Social X</p>
                         <p
                           className="text-xs text-muted-foreground cursor-default select-none"
                           onClick={handleVersionTap}
@@ -479,7 +479,7 @@ export function PreferencesModal({ onShowReview }: { onShowReview?: () => void }
                         onClick={() => { close(); window.electronAPI?.openExternal(APP_STORE_REVIEW_URL) }}
                         className="w-full flex items-center justify-between p-3.5 rounded-xl bg-card border border-border/40 hover:border-border text-sm font-medium text-foreground transition-colors group"
                       >
-                        Rate Apps for X & Twitter
+                        Rate Apps for Twitter Social X
                         <span className="text-base leading-none">⭐</span>
                       </button>
                       <button

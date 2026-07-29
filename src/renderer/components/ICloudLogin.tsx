@@ -1,4 +1,4 @@
-import logoUrl from '../assets/logo.jpeg'
+import logoUrl from '../assets/final.jpeg'
 import { useState } from 'react'
 import { useUIStore } from '../store/uiStore'
 import { useWorkspaceStore } from '../store/workspaceStore'
@@ -109,7 +109,7 @@ export function ICloudLogin() {
         >
           <img
             src={logoUrl}
-            alt="Apps for X & Twitter"
+            alt="Apps for Twitter Social X"
             style={{
               width: 72, height: 72, borderRadius: '16px',
               boxShadow: '0 4px 18px rgba(0,0,0,0.3)',
@@ -126,7 +126,7 @@ export function ICloudLogin() {
                 letterSpacing: '-0.2px',
               }}
             >
-              Apps for X & Twitter
+              Apps for Twitter Social X
             </div>
             <div
               style={{
