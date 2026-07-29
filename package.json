@@ -1,7 +1,7 @@
 {
   "name": "apps-for-x",
   "productName": "Apps for Twitter Social X",
-  "version": "1.15.0",
+  "version": "1.16.0",
   "description": "Apps for Twitter Social X – Multi-account X (Twitter) desktop client with productivity tools",
   "main": "dist-electron/main.js",
   "author": "Apps for Twitter Social X",
