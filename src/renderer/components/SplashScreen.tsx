@@ -1,4 +1,4 @@
-import logoUrl from '../assets/final.jpeg'
+import logoUrl from '../assets/final.png'
 import { useEffect, useState } from 'react'
 import { useUIStore } from '../store/uiStore'
 export function SplashScreen({ forceVisible }: { forceVisible?: boolean } = {}) {

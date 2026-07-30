@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { APP_NAME, APP_VERSION } from '../../../shared/constants'
 import { useUIStore } from '../../store/uiStore'
 import { dismissReview, requestNativeReview } from '../../lib/reviewPrompt'
-import logoUrl from '../../assets/final.jpeg'
+import logoUrl from '../../assets/final.png'
 
 function useIsDark() {
   const [dark, setDark] = useState(() => document.documentElement.classList.contains('dark'))
